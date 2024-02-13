@@ -1,0 +1,12 @@
+---
+title: "scrattch.example"
+---
+
+
+A collection of notebooks to recreate some of the analyses and visualizations created by using the srattch suite of tools.
+
+## Visualizations - hierarchy
+
+[**HierTree**](HierTree.html): An example for plotting a hierarchical tree (not dendrogram!) based on result from hierarchical clustering.
+
+![](images/HierTree.png)

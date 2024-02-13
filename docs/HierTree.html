@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2024-02-06" />
+
+<title>HierTree</title>
+
+<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/clipboard-1.7.1/clipboard.min.js"></script>
+<link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
+<link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
+<script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">scrattch.example</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Plot examples
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="HierTree.html">HierTree</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+<li role="separator" class="divider"></li>
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">HierTree</h1>
+<h4 class="date">2024-02-06</h4>
+
+</div>
+
+
+<div id="plotting-a-hierarchical-tree" class="section level2">
+<h2>Plotting a hierarchical tree</h2>
+<p>This script can be used to plot a hierarchical tree like the one
+presented in Yao et al., 2023 Figure 1. The input can be a data frame
+with rows representing the leaf-level and columns represent annotations.
+This data frame needs to be restructured to a parent-child (hierarchical
+network data frame), which is what the ‘as.hierDF’ does.</p>
+<script>
+  addClassKlippyTo("pre.r, pre.markdown");
+  addKlippy('left', 'top', 'auto', '1', 'Copy code', 'Copied!');
+</script>
+<pre class="r"><code>require(dplyr)
+require(ggplot2)
+require(ggnewscale)
+require(ggraph)
+require(igraph)
+require(tidyverse)
+#theme_set(theme_void())
+require(ggrepel)</code></pre>
+<p>Let’s start by loading some dummy hierarchical data.</p>
+<p>A hierarchic structure is basically a set of nodes, with edges
+linking nodes. Let’s create an edge list for plotting using the <igraph>
+package.We’ll do this for a subset of the data.</p>
+<pre class="r"><code>cl.df &lt;- cl.df[cl.df$class_id %in% c(6,7),]
+
+hierDF &lt;- as.hierDF(cl.df, levels = c(&quot;class_id_label&quot;, &quot;subclass_id_label&quot;,&quot;supertype_id_label&quot;),rootname=&quot;wmb&quot;)</code></pre>
+<pre><code>## [1] 1
+## [1] 2
+## [1] 3</code></pre>
+<pre class="r"><code># Create a graph object
+graph &lt;- graph_from_data_frame( hierDF)
+
+
+dummy &lt;- ggraph(graph, layout = &#39;dendrogram&#39;, circular = FALSE) + 
+  geom_edge_diagonal()
+
+dend_leaves &lt;- dummy[[&quot;data&quot;]] %&gt;% filter(leaf == TRUE)
+
+n_leaves &lt;- nrow(dend_leaves)
+
+dend_leaves &lt;- dend_leaves %&gt;% 
+  left_join(st.df[,c(&quot;supertype_id_label&quot;, &quot;supertype_color&quot;,&quot;supertype_id&quot;)], by=c(&quot;name&quot;=&quot;supertype_id_label&quot;))
+
+subclass.df &lt;- dummy[[&quot;data&quot;]] %&gt;% 
+  filter(name %in% sc.df$subclass_id_label) %&gt;% 
+  left_join(sc.df[,c(&quot;subclass_id_label&quot;,&quot;subclass_id&quot;, &quot;subclass_color&quot;)], by=c(&quot;name&quot;=&quot;subclass_id_label&quot;))
+subclass.df$subclass_id &lt;- gsub( &quot; .*$&quot;, &quot;&quot;, subclass.df$name) 
+
+class.df &lt;-  dummy[[&quot;data&quot;]] %&gt;% 
+  filter(name %in% c.df$class_id_label) %&gt;% 
+  left_join(c.df[,c(&quot;class_id_label&quot;, &quot;class_color&quot;)], by=c(&quot;name&quot;=&quot;class_id_label&quot;))</code></pre>
+<p>Next use ggraph to plot the ‘dendrogram’ and add additional layers of
+labeling using standard ggplot.</p>
+<pre class="r"><code>flat_plot = ggraph(graph, layout = &#39;dendrogram&#39;, circular = FALSE) + 
+  geom_edge_diagonal(width = 0.25,
+                     color=&quot;grey50&quot;) +
+  #supertype
+  geom_point(data = dend_leaves, 
+             aes(x=x, y=y, color=supertype_color),
+             cex=1,
+             shape=19) +
+  scale_color_identity(guide = &quot;none&quot;) +
+  # subclass
+  new_scale_color() +
+  geom_point(data=subclass.df, 
+             aes(x=x, y=y, color= subclass_color),
+             cex=2,
+             shape=19)+
+  geom_text(data=subclass.df, 
+             aes(x=x, y=y, label= subclass_id),
+             size=3,hjust=0, vjust=0.5,
+             angle=90)+ #,             direction=&#39;y&#39;)+
+    scale_color_identity(guide = &quot;none&quot;) +
+  # class
+  new_scale_color() +
+  geom_point(data=class.df, 
+             aes(x=x, y=y, color= class_color),
+             cex=2,
+             shape=19)+
+  geom_text_repel(data=class.df, 
+             aes(x=x, y=y, label= name),
+             size=3,hjust=1, vjust=0.5,
+             direction=&#39;y&#39;)+
+  scale_color_identity(guide = &quot;none&quot;) +
+  # add other levels if needed
+  geom_text(data=dend_leaves,
+            aes(x = x,
+                y = y-0.1,
+                label = name),
+            angle = 90,
+            hjust = 1.0,
+            vjust = 0.5,
+            size = 3,
+            lineheight=0.1) +
+  scale_x_continuous(limits = c(-1,n_leaves + 1),
+                     expand=c(0,0)) +  
+  coord_cartesian(clip = &#39;off&#39;)  +
+  theme_void()  +
+  theme(plot.margin = margin(t = 0, r = 0, b = 120, l = 0,))</code></pre>
+<p><img src="HierTree_files/figure-html/plot%20tree-1.png" width="1152" /></p>
+</div>
+
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkhpZXJUcmVlIg0Kb3V0cHV0Og0KICBodG1sX2RvY3VtZW50Og0KICAgIHRvYzogdHJ1ZQ0KICAgIHRvY19mbG9hdDogdHJ1ZQ0KICAgIGNvZGVfZG93bmxvYWQ6IHRydWUNCiAgICBjb2RlX2ZvbGRpbmc6IGhpZGUNCmRhdGU6ICIyMDI0LTAyLTA2Ig0KLS0tDQoNCiMjIFBsb3R0aW5nIGEgaGllcmFyY2hpY2FsIHRyZWUNCg0KVGhpcyBzY3JpcHQgY2FuIGJlIHVzZWQgdG8gcGxvdCBhIGhpZXJhcmNoaWNhbCB0cmVlIGxpa2UgdGhlIG9uZSBwcmVzZW50ZWQgaW4gWWFvIGV0IGFsLiwgMjAyMyBGaWd1cmUgMS4NClRoZSBpbnB1dCBjYW4gYmUgYSBkYXRhIGZyYW1lIHdpdGggcm93cyByZXByZXNlbnRpbmcgdGhlIGxlYWYtbGV2ZWwgYW5kIGNvbHVtbnMgcmVwcmVzZW50IGFubm90YXRpb25zLiBUaGlzIGRhdGEgZnJhbWUgbmVlZHMgdG8gYmUgcmVzdHJ1Y3R1cmVkIHRvIGEgcGFyZW50LWNoaWxkIChoaWVyYXJjaGljYWwgbmV0d29yayBkYXRhIGZyYW1lKSwgd2hpY2ggaXMgd2hhdCB0aGUgJ2FzLmhpZXJERicgZG9lcy4gDQoNCmBgYHtyIGtsaXBweSwgZWNobz1GQUxTRSwgaW5jbHVkZT1UUlVFfQ0Ka2xpcHB5OjprbGlwcHkoKQ0KYGBgDQoNCmBgYHtyIHNldHVwLCBpbmNsdWRlPUZBTFNFfSANCmtuaXRyOjpvcHRzX2NodW5rJHNldCh3YXJuaW5nID0gRkFMU0UsIG1lc3NhZ2UgPSBGQUxTRSkgDQpgYGANCg0KYGBge3IgbG9hZGluZyBsaWJzLCBlY2hvPVR9DQoNCnJlcXVpcmUoZHBseXIpDQpyZXF1aXJlKGdncGxvdDIpDQpyZXF1aXJlKGdnbmV3c2NhbGUpDQpyZXF1aXJlKGdncmFwaCkNCnJlcXVpcmUoaWdyYXBoKQ0KcmVxdWlyZSh0aWR5dmVyc2UpDQojdGhlbWVfc2V0KHRoZW1lX3ZvaWQoKSkNCnJlcXVpcmUoZ2dyZXBlbCkNCg0KYGBgDQoNCkxldCdzIHN0YXJ0IGJ5IGxvYWRpbmcgc29tZSBkdW1teSBoaWVyYXJjaGljYWwgZGF0YS4NCg0KYGBge3IsIGVjaG89RiwgZXZhbD1UfQ0KVVJMID0gJ2h0dHBzOi8vYWxsZW4tYnJhaW4tY2VsbC1hdGxhcy5zMy11cy13ZXN0LTIuYW1hem9uYXdzLmNvbS9tZXRhZGF0YS9XTUItdGF4b25vbXkvMjAyMzEyMTUvY2wuZGZfQ0NOMjAyMzA3MjIwLnhsc3gnDQpkYXRhID0gcmlvOjppbXBvcnRfbGlzdChVUkwpDQoNCmNvbG9ycyA8LSByaW86OmltcG9ydCgiaHR0cHM6Ly9hbGxlbi1icmFpbi1jZWxsLWF0bGFzLnMzLXVzLXdlc3QtMi5hbWF6b25hd3MuY29tL21ldGFkYXRhL1dNQi10YXhvbm9teS8yMDIzMTIxNS92aWV3cy9jbHVzdGVyX3RvX2NsdXN0ZXJfYW5ub3RhdGlvbl9tZW1iZXJzaGlwX2NvbG9yLmNzdiIpDQpgYGANCg0KYGBge3IsIGVjaG89RiwgZXZhbD1UfQ0KDQpjbC5kZiA8LSBkYXRhJGNsdXN0ZXJfYW5ub3RhdGlvbg0KY2wuZGYgPC0gY2wuZGZbY2wuZGYkY2xhc3NfbGFiZWwgIT0gIkxRIixdDQoNCiMgYWRkIGNvbG9ycyB0byBjbHVzdGVyIGRhdGEgZnJhbWUNCmNvbG9ycyRjbHVzdGVyX2FsaWFzIDwtIGFzLmNoYXJhY3Rlcihhcy5pbnRlZ2VyKGNvbG9ycyRjbHVzdGVyX2FsaWFzKSkNCmNsLmRmIDwtIGNsLmRmICU+JSBsZWZ0X2pvaW4oY29sb3JzLCBieT1jKCJjbCI9ImNsdXN0ZXJfYWxpYXMiKSkNCg0Kc2VsZWN0LmNvbHVtbnMgPC0gY29sbmFtZXMoY2wuZGYpW2dyZXAoIl5zdXBlcnR5cGUiLCBjb2xuYW1lcyhjbC5kZikpXQ0Kc3QuZGYgPC0gY2wuZGYgJT4lIGdyb3VwX2J5X2F0KHNlbGVjdC5jb2x1bW5zKSAlPiUgc3VtbWFyaXNlKG49bigpKQ0KDQpzZWxlY3QuY29sdW1ucyA8LSBjb2xuYW1lcyhjbC5kZilbZ3JlcCgiXnN1YmNsYXNzIiwgY29sbmFtZXMoY2wuZGYpKV0NCnNjLmRmIDwtIGNsLmRmICU+JSBncm91cF9ieV9hdChzZWxlY3QuY29sdW1ucykgJT4lIHN1bW1hcmlzZShuPW4oKSkNCg0Kc2VsZWN0LmNvbHVtbnMgPC0gY29sbmFtZXMoY2wuZGYpW2dyZXAoIl5jbGFzcyIsIGNvbG5hbWVzKGNsLmRmKSldDQpjLmRmIDwtIGNsLmRmICU+JSBncm91cF9ieV9hdChzZWxlY3QuY29sdW1ucykgJT4lIHN1bW1hcmlzZShuPW4oKSkNCg0KYGBgDQoNCkEgaGllcmFyY2hpYyBzdHJ1Y3R1cmUgaXMgYmFzaWNhbGx5IGEgc2V0IG9mIG5vZGVzLCB3aXRoIGVkZ2VzIGxpbmtpbmcgbm9kZXMuIExldCdzIGNyZWF0ZSBhbiBlZGdlIGxpc3QgZm9yIHBsb3R0aW5nIHVzaW5nIHRoZSA8aWdyYXBoPiBwYWNrYWdlLldlJ2xsIGRvIHRoaXMgZm9yIGEgc3Vic2V0IG9mIHRoZSBkYXRhLg0KDQpgYGB7ciwgZWNobz1GLCBldmFsPVR9DQpkZXZ0b29sczo6c291cmNlX2dpc3QoImh0dHBzOi8vZ2lzdC5naXRodWIuY29tL2N2YW52ZWx0L2UwZTQ4MzM2ZjAxYzQ5YWE2MTZhYWFiNGFiZjk5N2Q4IikNCmBgYA0KDQoNCg0KYGBge3IgY3JlYXRlIHRyZWUsIGZpZy53aWR0aD0xMiwgZmlnLmhlaWdodD00LCBlY2hvPVR9DQpjbC5kZiA8LSBjbC5kZltjbC5kZiRjbGFzc19pZCAlaW4lIGMoNiw3KSxdDQoNCmhpZXJERiA8LSBhcy5oaWVyREYoY2wuZGYsIGxldmVscyA9IGMoImNsYXNzX2lkX2xhYmVsIiwgInN1YmNsYXNzX2lkX2xhYmVsIiwic3VwZXJ0eXBlX2lkX2xhYmVsIikscm9vdG5hbWU9IndtYiIpDQojIENyZWF0ZSBhIGdyYXBoIG9iamVjdA0KZ3JhcGggPC0gZ3JhcGhfZnJvbV9kYXRhX2ZyYW1lKCBoaWVyREYpDQoNCg0KZHVtbXkgPC0gZ2dyYXBoKGdyYXBoLCBsYXlvdXQgPSAnZGVuZHJvZ3JhbScsIGNpcmN1bGFyID0gRkFMU0UpICsgDQogIGdlb21fZWRnZV9kaWFnb25hbCgpDQoNCmRlbmRfbGVhdmVzIDwtIGR1bW15W1siZGF0YSJdXSAlPiUgZmlsdGVyKGxlYWYgPT0gVFJVRSkNCg0Kbl9sZWF2ZXMgPC0gbnJvdyhkZW5kX2xlYXZlcykNCg0KZGVuZF9sZWF2ZXMgPC0gZGVuZF9sZWF2ZXMgJT4lIA0KICBsZWZ0X2pvaW4oc3QuZGZbLGMoInN1cGVydHlwZV9pZF9sYWJlbCIsICJzdXBlcnR5cGVfY29sb3IiLCJzdXBlcnR5cGVfaWQiKV0sIGJ5PWMoIm5hbWUiPSJzdXBlcnR5cGVfaWRfbGFiZWwiKSkNCg0Kc3ViY2xhc3MuZGYgPC0gZHVtbXlbWyJkYXRhIl1dICU+JSANCiAgZmlsdGVyKG5hbWUgJWluJSBzYy5kZiRzdWJjbGFzc19pZF9sYWJlbCkgJT4lIA0KICBsZWZ0X2pvaW4oc2MuZGZbLGMoInN1YmNsYXNzX2lkX2xhYmVsIiwic3ViY2xhc3NfaWQiLCAic3ViY2xhc3NfY29sb3IiKV0sIGJ5PWMoIm5hbWUiPSJzdWJjbGFzc19pZF9sYWJlbCIpKQ0Kc3ViY2xhc3MuZGYkc3ViY2xhc3NfaWQgPC0gZ3N1YiggIiAuKiQiLCAiIiwgc3ViY2xhc3MuZGYkbmFtZSkgDQoNCmNsYXNzLmRmIDwtICBkdW1teVtbImRhdGEiXV0gJT4lIA0KICBmaWx0ZXIobmFtZSAlaW4lIGMuZGYkY2xhc3NfaWRfbGFiZWwpICU+JSANCiAgbGVmdF9qb2luKGMuZGZbLGMoImNsYXNzX2lkX2xhYmVsIiwgImNsYXNzX2NvbG9yIildLCBieT1jKCJuYW1lIj0iY2xhc3NfaWRfbGFiZWwiKSkNCg0KYGBgDQpOZXh0IHVzZSBnZ3JhcGggdG8gcGxvdCB0aGUgJ2RlbmRyb2dyYW0nIGFuZCBhZGQgYWRkaXRpb25hbCBsYXllcnMgb2YgbGFiZWxpbmcgdXNpbmcgc3RhbmRhcmQgZ2dwbG90Lg0KDQpgYGB7ciBjcmVhdGUgcGxvdCwgZmlnLndpZHRoPTExLCBmaWcuaGVpZ2h0PTIsIGV2YWw9VCwgZWNobz1UfQ0KZmxhdF9wbG90ID0gZ2dyYXBoKGdyYXBoLCBsYXlvdXQgPSAnZGVuZHJvZ3JhbScsIGNpcmN1bGFyID0gRkFMU0UpICsgDQogIGdlb21fZWRnZV9kaWFnb25hbCh3aWR0aCA9IDAuMjUsDQogICAgICAgICAgICAgICAgICAgICBjb2xvcj0iZ3JleTUwIikgKw0KICAjc3VwZXJ0eXBlDQogIGdlb21fcG9pbnQoZGF0YSA9IGRlbmRfbGVhdmVzLCANCiAgICAgICAgICAgICBhZXMoeD14LCB5PXksIGNvbG9yPXN1cGVydHlwZV9jb2xvciksDQogICAgICAgICAgICAgY2V4PTEsDQogICAgICAgICAgICAgc2hhcGU9MTkpICsNCiAgc2NhbGVfY29sb3JfaWRlbnRpdHkoZ3VpZGUgPSAibm9uZSIpICsNCiAgIyBzdWJjbGFzcw0KICBuZXdfc2NhbGVfY29sb3IoKSArDQogIGdlb21fcG9pbnQoZGF0YT1zdWJjbGFzcy5kZiwgDQogICAgICAgICAgICAgYWVzKHg9eCwgeT15LCBjb2xvcj0gc3ViY2xhc3NfY29sb3IpLA0KICAgICAgICAgICAgIGNleD0yLA0KICAgICAgICAgICAgIHNoYXBlPTE5KSsNCiAgZ2VvbV90ZXh0KGRhdGE9c3ViY2xhc3MuZGYsIA0KICAgICAgICAgICAgIGFlcyh4PXgsIHk9eSwgbGFiZWw9IHN1YmNsYXNzX2lkKSwNCiAgICAgICAgICAgICBzaXplPTMsaGp1c3Q9MCwgdmp1c3Q9MC41LA0KICAgICAgICAgICAgIGFuZ2xlPTkwKSsgIywgICAgICAgICAgICAgZGlyZWN0aW9uPSd5JykrDQogICAgc2NhbGVfY29sb3JfaWRlbnRpdHkoZ3VpZGUgPSAibm9uZSIpICsNCiAgIyBjbGFzcw0KICBuZXdfc2NhbGVfY29sb3IoKSArDQogIGdlb21fcG9pbnQoZGF0YT1jbGFzcy5kZiwgDQogICAgICAgICAgICAgYWVzKHg9eCwgeT15LCBjb2xvcj0gY2xhc3NfY29sb3IpLA0KICAgICAgICAgICAgIGNleD0yLA0KICAgICAgICAgICAgIHNoYXBlPTE5KSsNCiAgZ2VvbV90ZXh0X3JlcGVsKGRhdGE9Y2xhc3MuZGYsIA0KICAgICAgICAgICAgIGFlcyh4PXgsIHk9eSwgbGFiZWw9IG5hbWUpLA0KICAgICAgICAgICAgIHNpemU9MyxoanVzdD0xLCB2anVzdD0wLjUsDQogICAgICAgICAgICAgZGlyZWN0aW9uPSd5JykrDQogIHNjYWxlX2NvbG9yX2lkZW50aXR5KGd1aWRlID0gIm5vbmUiKSArDQogICMgYWRkIG90aGVyIGxldmVscyBpZiBuZWVkZWQNCiAgZ2VvbV90ZXh0KGRhdGE9ZGVuZF9sZWF2ZXMsDQogICAgICAgICAgICBhZXMoeCA9IHgsDQogICAgICAgICAgICAgICAgeSA9IHktMC4xLA0KICAgICAgICAgICAgICAgIGxhYmVsID0gbmFtZSksDQogICAgICAgICAgICBhbmdsZSA9IDkwLA0KICAgICAgICAgICAgaGp1c3QgPSAxLjAsDQogICAgICAgICAgICB2anVzdCA9IDAuNSwNCiAgICAgICAgICAgIHNpemUgPSAzLA0KICAgICAgICAgICAgbGluZWhlaWdodD0wLjEpICsNCiAgc2NhbGVfeF9jb250aW51b3VzKGxpbWl0cyA9IGMoLTEsbl9sZWF2ZXMgKyAxKSwNCiAgICAgICAgICAgICAgICAgICAgIGV4cGFuZD1jKDAsMCkpICsgIA0KICBjb29yZF9jYXJ0ZXNpYW4oY2xpcCA9ICdvZmYnKSAgKw0KICB0aGVtZV92b2lkKCkgICsNCiAgdGhlbWUocGxvdC5tYXJnaW4gPSBtYXJnaW4odCA9IDAsIHIgPSAwLCBiID0gMTIwLCBsID0gMCwpKQ0KICANCg0KDQpgYGANCg0KYGBge3IgcGxvdCB0cmVlLCBmaWcud2lkdGg9MTIsIGZpZy5oZWlnaHQ9NCxlY2hvPUZ9DQpmbGF0X3Bsb3QNCmBgYA0KDQoNCg==</div>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("HierTree.Rmd");
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

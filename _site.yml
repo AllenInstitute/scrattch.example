@@ -1,0 +1,14 @@
+name: "scrattch.example"
+navbar:
+  title: "scrattch.example"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Plot examples"
+      menu: 
+      - text: HierTree
+        href: HierTree.html  
+output_dir: docs
+output:
+  html_document:
+    theme: yeti

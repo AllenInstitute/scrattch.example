@@ -1,0 +1,161 @@
+---
+title: "HierTree"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    code_download: true
+    code_folding: hide
+date: "2024-02-06"
+---
+
+## Plotting a hierarchical tree
+
+This script can be used to plot a hierarchical tree like the one presented in Yao et al., 2023 Figure 1.
+The input can be a data frame with rows representing the leaf-level and columns represent annotations. This data frame needs to be restructured to a parent-child (hierarchical network data frame), which is what the 'as.hierDF' does. 
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy()
+```
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+```{r loading libs, echo=T}
+
+require(dplyr)
+require(ggplot2)
+require(ggnewscale)
+require(ggraph)
+require(igraph)
+require(tidyverse)
+#theme_set(theme_void())
+require(ggrepel)
+
+```
+
+Let's start by loading some dummy hierarchical data.
+
+```{r, echo=F, eval=T}
+URL = 'https://allen-brain-cell-atlas.s3-us-west-2.amazonaws.com/metadata/WMB-taxonomy/20231215/cl.df_CCN202307220.xlsx'
+data = rio::import_list(URL)
+
+colors <- rio::import("https://allen-brain-cell-atlas.s3-us-west-2.amazonaws.com/metadata/WMB-taxonomy/20231215/views/cluster_to_cluster_annotation_membership_color.csv")
+```
+
+```{r, echo=F, eval=T}
+
+cl.df <- data$cluster_annotation
+cl.df <- cl.df[cl.df$class_label != "LQ",]
+
+# add colors to cluster data frame
+colors$cluster_alias <- as.character(as.integer(colors$cluster_alias))
+cl.df <- cl.df %>% left_join(colors, by=c("cl"="cluster_alias"))
+
+select.columns <- colnames(cl.df)[grep("^supertype", colnames(cl.df))]
+st.df <- cl.df %>% group_by_at(select.columns) %>% summarise(n=n())
+
+select.columns <- colnames(cl.df)[grep("^subclass", colnames(cl.df))]
+sc.df <- cl.df %>% group_by_at(select.columns) %>% summarise(n=n())
+
+select.columns <- colnames(cl.df)[grep("^class", colnames(cl.df))]
+c.df <- cl.df %>% group_by_at(select.columns) %>% summarise(n=n())
+
+```
+
+A hierarchic structure is basically a set of nodes, with edges linking nodes. Let's create an edge list for plotting using the <igraph> package.We'll do this for a subset of the data.
+
+```{r, echo=F, eval=T}
+devtools::source_gist("https://gist.github.com/cvanvelt/e0e48336f01c49aa616aaab4abf997d8")
+```
+
+
+
+```{r create tree, fig.width=12, fig.height=4, echo=T}
+cl.df <- cl.df[cl.df$class_id %in% c(6,7),]
+
+hierDF <- as.hierDF(cl.df, levels = c("class_id_label", "subclass_id_label","supertype_id_label"),rootname="wmb")
+# Create a graph object
+graph <- graph_from_data_frame( hierDF)
+
+
+dummy <- ggraph(graph, layout = 'dendrogram', circular = FALSE) + 
+  geom_edge_diagonal()
+
+dend_leaves <- dummy[["data"]] %>% filter(leaf == TRUE)
+
+n_leaves <- nrow(dend_leaves)
+
+dend_leaves <- dend_leaves %>% 
+  left_join(st.df[,c("supertype_id_label", "supertype_color","supertype_id")], by=c("name"="supertype_id_label"))
+
+subclass.df <- dummy[["data"]] %>% 
+  filter(name %in% sc.df$subclass_id_label) %>% 
+  left_join(sc.df[,c("subclass_id_label","subclass_id", "subclass_color")], by=c("name"="subclass_id_label"))
+subclass.df$subclass_id <- gsub( " .*$", "", subclass.df$name) 
+
+class.df <-  dummy[["data"]] %>% 
+  filter(name %in% c.df$class_id_label) %>% 
+  left_join(c.df[,c("class_id_label", "class_color")], by=c("name"="class_id_label"))
+
+```
+Next use ggraph to plot the 'dendrogram' and add additional layers of labeling using standard ggplot.
+
+```{r create plot, fig.width=11, fig.height=2, eval=T, echo=T}
+flat_plot = ggraph(graph, layout = 'dendrogram', circular = FALSE) + 
+  geom_edge_diagonal(width = 0.25,
+                     color="grey50") +
+  #supertype
+  geom_point(data = dend_leaves, 
+             aes(x=x, y=y, color=supertype_color),
+             cex=1,
+             shape=19) +
+  scale_color_identity(guide = "none") +
+  # subclass
+  new_scale_color() +
+  geom_point(data=subclass.df, 
+             aes(x=x, y=y, color= subclass_color),
+             cex=2,
+             shape=19)+
+  geom_text(data=subclass.df, 
+             aes(x=x, y=y, label= subclass_id),
+             size=3,hjust=0, vjust=0.5,
+             angle=90)+ #,             direction='y')+
+    scale_color_identity(guide = "none") +
+  # class
+  new_scale_color() +
+  geom_point(data=class.df, 
+             aes(x=x, y=y, color= class_color),
+             cex=2,
+             shape=19)+
+  geom_text_repel(data=class.df, 
+             aes(x=x, y=y, label= name),
+             size=3,hjust=1, vjust=0.5,
+             direction='y')+
+  scale_color_identity(guide = "none") +
+  # add other levels if needed
+  geom_text(data=dend_leaves,
+            aes(x = x,
+                y = y-0.1,
+                label = name),
+            angle = 90,
+            hjust = 1.0,
+            vjust = 0.5,
+            size = 3,
+            lineheight=0.1) +
+  scale_x_continuous(limits = c(-1,n_leaves + 1),
+                     expand=c(0,0)) +  
+  coord_cartesian(clip = 'off')  +
+  theme_void()  +
+  theme(plot.margin = margin(t = 0, r = 0, b = 120, l = 0,))
+  
+
+
+```
+
+```{r plot tree, fig.width=12, fig.height=4,echo=F}
+flat_plot
+```
+
+
