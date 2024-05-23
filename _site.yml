@@ -6,8 +6,12 @@ navbar:
       href: index.html
     - text: "Plot examples"
       menu: 
+      - text: Constellation
+        href: Constellation.html 
       - text: HierTree
         href: HierTree.html  
+      - text: Sunburst
+        href: Sunburst.html  
 output_dir: docs
 output:
   html_document:

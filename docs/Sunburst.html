@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2024-02-06" />
+
+<title>Sunburst hierarchy</title>
+
+<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/clipboard-1.7.1/clipboard.min.js"></script>
+<link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
+<link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
+<script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
+<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="site_libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.10.3/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">scrattch.example</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Plot examples
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="Constellation.html">Constellation</a>
+    </li>
+    <li>
+      <a href="HierTree.html">HierTree</a>
+    </li>
+    <li>
+      <a href="Sunburst.html">Sunburst</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+<li role="separator" class="divider"></li>
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Sunburst hierarchy</h1>
+<h4 class="date">2024-02-06</h4>
+
+</div>
+
+
+<p><br />
+<br />
+</p>
+<div id="plotting-a-sunburst-diagram" class="section level2">
+<h2>Plotting a sunburst diagram</h2>
+<p><br />
+</p>
+<p>This script can be used to plot a sunburst diagram to represent a
+hierarchy. The input can be a data frame with rows representing the
+leaf-level and columns represent annotations. This data frame needs to
+be restructured to a parent-child (hierarchical network data frame),
+which is what the ‘as.hierDF’ does.</p>
+<script>
+  addClassKlippyTo("pre.r, pre.markdown");
+  addKlippy('left', 'top', 'auto', '1', 'Copy code', 'Copied!');
+</script>
+<pre class="r"><code>require(dplyr)
+require(plotly)</code></pre>
+<p>Let’s start by loading some dummy hierarchical data.</p>
+<pre class="r"><code>URL = &#39;https://allen-brain-cell-atlas.s3-us-west-2.amazonaws.com/metadata/WMB-taxonomy/20231215/cl.df_CCN202307220.xlsx&#39;
+data = rio::import_list(URL)
+
+colors &lt;- rio::import(&quot;https://allen-brain-cell-atlas.s3-us-west-2.amazonaws.com/metadata/WMB-taxonomy/20231215/views/cluster_to_cluster_annotation_membership_color.csv&quot;)</code></pre>
+<pre class="r"><code>cl.df &lt;- data$cluster_annotation
+cl.df &lt;- cl.df[cl.df$class_label != &quot;LQ&quot;,]
+
+cl.df &lt;- cl.df %&gt;% mutate(cluster_size = c(multiome.size + v2.size + v3.size))
+
+# add colors to cluster data frame
+colors$cluster_alias &lt;- as.character(as.integer(colors$cluster_alias))
+cl.df &lt;- cl.df %&gt;% left_join(colors, by=c(&quot;cl&quot;=&quot;cluster_alias&quot;))
+
+select.columns &lt;- colnames(cl.df)[grep(&quot;^supertype&quot;, colnames(cl.df))]
+st.df &lt;- cl.df %&gt;% group_by_at(select.columns) %&gt;% summarise(n=n())
+
+select.columns &lt;- colnames(cl.df)[grep(&quot;^subclass&quot;, colnames(cl.df))]
+sc.df &lt;- cl.df %&gt;% group_by_at(select.columns) %&gt;% summarise(n=n())
+
+select.columns &lt;- colnames(cl.df)[grep(&quot;^class&quot;, colnames(cl.df))]
+c.df &lt;- cl.df %&gt;% group_by_at(select.columns) %&gt;% summarise(n=n())</code></pre>
+<p>A hierarchic structure is basically a set of nodes, with edges
+linking nodes. Let’s create an edge list for plotting using the <igraph>
+package.We’ll do this for a subset of the data.</p>
+<pre class="r"><code>devtools::source_gist(&quot;https://gist.github.com/cvanvelt/ef29e1581b30b9758ec1bba1b8322619&quot;)</code></pre>
+<pre class="r"><code>cl.df &lt;- cl.df[cl.df$class_id %in% c(1:7),]
+sunburstDF &lt;- as.sunburstDF(cl.df, 
+                           levels=c(&quot;class&quot;,&quot;subclass&quot;,&quot;supertype&quot;),
+                            valueCol = &quot;cluster_size&quot;, 
+                            rootname=&quot;WMB&quot;)</code></pre>
+<pre><code>## [1] 1
+## [1] 2
+## [1] 3</code></pre>
+<pre class="r"><code>p &lt;- plot_ly() %&gt;%
+      add_trace(ids = sunburstDF$ids,
+                labels = sunburstDF$labels,
+                parents =sunburstDF$parent,
+                values = sunburstDF$values,
+                type = &#39;sunburst&#39;,
+                sort=FALSE,
+                marker = list(colors = sunburstDF$color),
+                domain = list(column = 1),
+                branchvalues = &#39;total&#39;
+                )%&gt;%
+      layout(grid = list(columns =1, rows = 1),
+              margin = list(l = 0, r = 0, b = 0, t = 0)
+      )</code></pre>
+<pre class="r"><code>p</code></pre>
+<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-fc800e418d9c063183d6" style="width:576px;height:576px;"></div>
+<script type="application/json" data-for="htmlwidget-fc800e418d9c063183d6">{"x":{"visdat":{"88184af15c53":["function () ","plotlyVisDat"]},"cur_data":"88184af15c53","attrs":{"88184af15c53":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"ids":["WMB","WMB-IT-ET Glut","WMB-NP-CT-L6b Glut","WMB-OB-CR Glut","WMB-DG-IMN Glut","WMB-OB-IMN GABA","WMB-CTX-CGE GABA","WMB-CTX-MGE GABA","WMB-IT-ET Glut-CLA-EPd-CTX Car3 Glut","WMB-IT-ET Glut-IT EP-CLA Glut","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut","WMB-IT-ET Glut-L6 IT CTX Glut","WMB-IT-ET Glut-L5 IT CTX Glut","WMB-IT-ET Glut-L4/5 IT CTX Glut","WMB-IT-ET Glut-L2/3 IT CTX Glut","WMB-IT-ET Glut-L2/3 IT ENT Glut","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut","WMB-IT-ET Glut-IT AON-TT-DP Glut","WMB-IT-ET Glut-L2 IT ENT-po Glut","WMB-IT-ET Glut-MEA Slc17a7 Glut","WMB-IT-ET Glut-COAp Grxcr2 Glut","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut","WMB-IT-ET Glut-ENTmv-PA-COAp Glut","WMB-IT-ET Glut-CA1-ProS Glut","WMB-IT-ET Glut-CA3 Glut","WMB-IT-ET Glut-L2 IT PPP-APr Glut","WMB-IT-ET Glut-L2/3 IT PPP Glut","WMB-IT-ET Glut-L2/3 IT RSP Glut","WMB-IT-ET Glut-L4 RSP-ACA Glut","WMB-IT-ET Glut-L5 ET CTX Glut","WMB-IT-ET Glut-SUB-ProS Glut","WMB-IT-ET Glut-L5 PPP Glut","WMB-IT-ET Glut-CA2-FC-IG Glut","WMB-IT-ET Glut-NLOT Rho Glut","WMB-NP-CT-L6b Glut-L6b EPd Glut","WMB-NP-CT-L6b Glut-L6b/CT ENT Glut","WMB-NP-CT-L6b Glut-L6b CTX Glut","WMB-NP-CT-L6b Glut-L6 CT CTX Glut","WMB-NP-CT-L6b Glut-CT SUB Glut","WMB-NP-CT-L6b Glut-L5 NP CTX Glut","WMB-NP-CT-L6b Glut-NP SUB Glut","WMB-NP-CT-L6b Glut-NP PPP Glut","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut","WMB-OB-CR Glut-HPF CR Glut","WMB-DG-IMN Glut-DG Glut","WMB-DG-IMN Glut-DG-PIR Ex IMN","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba","WMB-OB-IMN GABA-OB Trdn Gaba","WMB-OB-IMN GABA-OB-in Frmd7 Gaba","WMB-OB-IMN GABA-OB-out Frmd7 Gaba","WMB-OB-IMN GABA-OB-mi Frmd7 Gaba","WMB-OB-IMN GABA-OB Dopa-Gaba","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Sncg Gaba","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba","WMB-CTX-CGE GABA-Lamp5 Gaba","WMB-CTX-MGE GABA-Lamp5 Lhx6 Gaba","WMB-CTX-MGE GABA-Pvalb chandelier Gaba","WMB-CTX-MGE GABA-Pvalb Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-IT-ET Glut-CLA-EPd-CTX Car3 Glut-CLA-EPd-CTX Car3 Glut_1","WMB-IT-ET Glut-CLA-EPd-CTX Car3 Glut-CLA-EPd-CTX Car3 Glut_2","WMB-IT-ET Glut-IT EP-CLA Glut-IT EP-CLA Glut_1","WMB-IT-ET Glut-IT EP-CLA Glut-IT EP-CLA Glut_2","WMB-IT-ET Glut-IT EP-CLA Glut-IT EP-CLA Glut_3","WMB-IT-ET Glut-IT EP-CLA Glut-IT EP-CLA Glut_4","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut-L5/6 IT TPE-ENT Glut_1","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut-L5/6 IT TPE-ENT Glut_2","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut-L5/6 IT TPE-ENT Glut_3","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut-L5/6 IT TPE-ENT Glut_4","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut-L5/6 IT TPE-ENT Glut_5","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut-L5/6 IT TPE-ENT Glut_6","WMB-IT-ET Glut-L6 IT CTX Glut-L6 IT CTX Glut_1","WMB-IT-ET Glut-L6 IT CTX Glut-L6 IT CTX Glut_2","WMB-IT-ET Glut-L6 IT CTX Glut-L6 IT CTX Glut_3","WMB-IT-ET Glut-L6 IT CTX Glut-L6 IT CTX Glut_4","WMB-IT-ET Glut-L6 IT CTX Glut-L6 IT CTX Glut_5","WMB-IT-ET Glut-L5 IT CTX Glut-L5 IT CTX Glut_1","WMB-IT-ET Glut-L5 IT CTX Glut-L5 IT CTX Glut_2","WMB-IT-ET Glut-L5 IT CTX Glut-L5 IT CTX Glut_3","WMB-IT-ET Glut-L5 IT CTX Glut-L5 IT CTX Glut_4","WMB-IT-ET Glut-L5 IT CTX Glut-L5 IT CTX Glut_5","WMB-IT-ET Glut-L4/5 IT CTX Glut-L4/5 IT CTX Glut_1","WMB-IT-ET Glut-L4/5 IT CTX Glut-L4/5 IT CTX Glut_2","WMB-IT-ET Glut-L4/5 IT CTX Glut-L4/5 IT CTX Glut_3","WMB-IT-ET Glut-L4/5 IT CTX Glut-L4/5 IT CTX Glut_4","WMB-IT-ET Glut-L4/5 IT CTX Glut-L4/5 IT CTX Glut_5","WMB-IT-ET Glut-L4/5 IT CTX Glut-L4/5 IT CTX Glut_6","WMB-IT-ET Glut-L2/3 IT CTX Glut-L2/3 IT CTX Glut_1","WMB-IT-ET Glut-L2/3 IT CTX Glut-L2/3 IT CTX Glut_2","WMB-IT-ET Glut-L2/3 IT CTX Glut-L2/3 IT CTX Glut_3","WMB-IT-ET Glut-L2/3 IT CTX Glut-L2/3 IT CTX Glut_4","WMB-IT-ET Glut-L2/3 IT ENT Glut-L2/3 IT ENT Glut_1","WMB-IT-ET Glut-L2/3 IT ENT Glut-L2/3 IT ENT Glut_2","WMB-IT-ET Glut-L2/3 IT ENT Glut-L2/3 IT ENT Glut_3","WMB-IT-ET Glut-L2/3 IT ENT Glut-L2/3 IT ENT Glut_4","WMB-IT-ET Glut-L2/3 IT ENT Glut-L2/3 IT ENT Glut_5","WMB-IT-ET Glut-L2/3 IT ENT Glut-L2/3 IT ENT Glut_6","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut-L2/3 IT PIR-ENTl Glut_1","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut-L2/3 IT PIR-ENTl Glut_2","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut-L2/3 IT PIR-ENTl Glut_3","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut-L2/3 IT PIR-ENTl Glut_4","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut-L2/3 IT PIR-ENTl Glut_5","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut-L2/3 IT PIR-ENTl Glut_6","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut-L2/3 IT PIR-ENTl Glut_7","WMB-IT-ET Glut-IT AON-TT-DP Glut-IT AON-TT-DP Glut_1","WMB-IT-ET Glut-IT AON-TT-DP Glut-IT AON-TT-DP Glut_2","WMB-IT-ET Glut-IT AON-TT-DP Glut-IT AON-TT-DP Glut_3","WMB-IT-ET Glut-IT AON-TT-DP Glut-IT AON-TT-DP Glut_4","WMB-IT-ET Glut-IT AON-TT-DP Glut-IT AON-TT-DP Glut_5","WMB-IT-ET Glut-L2 IT ENT-po Glut-L2 IT ENT-po Glut_1","WMB-IT-ET Glut-L2 IT ENT-po Glut-L2 IT ENT-po Glut_2","WMB-IT-ET Glut-L2 IT ENT-po Glut-L2 IT ENT-po Glut_3","WMB-IT-ET Glut-L2 IT ENT-po Glut-L2 IT ENT-po Glut_4","WMB-IT-ET Glut-MEA Slc17a7 Glut-MEA Slc17a7 Glut_1","WMB-IT-ET Glut-MEA Slc17a7 Glut-MEA Slc17a7 Glut_2","WMB-IT-ET Glut-MEA Slc17a7 Glut-MEA Slc17a7 Glut_3","WMB-IT-ET Glut-COAp Grxcr2 Glut-COAp Grxcr2 Glut_1","WMB-IT-ET Glut-COAp Grxcr2 Glut-COAp Grxcr2 Glut_2","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut-LA-BLA-BMA-PA Glut_1","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut-LA-BLA-BMA-PA Glut_2","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut-LA-BLA-BMA-PA Glut_3","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut-LA-BLA-BMA-PA Glut_4","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut-LA-BLA-BMA-PA Glut_5","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut-LA-BLA-BMA-PA Glut_6","WMB-IT-ET Glut-ENTmv-PA-COAp Glut-ENTmv-PA-COAp Glut_1","WMB-IT-ET Glut-ENTmv-PA-COAp Glut-ENTmv-PA-COAp Glut_2","WMB-IT-ET Glut-ENTmv-PA-COAp Glut-ENTmv-PA-COAp Glut_3","WMB-IT-ET Glut-CA1-ProS Glut-CA1-ProS Glut_1","WMB-IT-ET Glut-CA1-ProS Glut-CA1-ProS Glut_2","WMB-IT-ET Glut-CA1-ProS Glut-CA1-ProS Glut_3","WMB-IT-ET Glut-CA1-ProS Glut-CA1-ProS Glut_4","WMB-IT-ET Glut-CA1-ProS Glut-CA1-ProS Glut_5","WMB-IT-ET Glut-CA1-ProS Glut-CA1-ProS Glut_6","WMB-IT-ET Glut-CA3 Glut-CA3 Glut_1","WMB-IT-ET Glut-CA3 Glut-CA3 Glut_2","WMB-IT-ET Glut-CA3 Glut-CA3 Glut_3","WMB-IT-ET Glut-CA3 Glut-CA3 Glut_4","WMB-IT-ET Glut-CA3 Glut-CA3 Glut_5","WMB-IT-ET Glut-L2 IT PPP-APr Glut-L2 IT PPP-APr Glut_1","WMB-IT-ET Glut-L2 IT PPP-APr Glut-L2 IT PPP-APr Glut_2","WMB-IT-ET Glut-L2 IT PPP-APr Glut-L2 IT PPP-APr Glut_3","WMB-IT-ET Glut-L2 IT PPP-APr Glut-L2 IT PPP-APr Glut_4","WMB-IT-ET Glut-L2/3 IT PPP Glut-L2/3 IT PPP Glut_1","WMB-IT-ET Glut-L2/3 IT PPP Glut-L2/3 IT PPP Glut_2","WMB-IT-ET Glut-L2/3 IT PPP Glut-L2/3 IT PPP Glut_3","WMB-IT-ET Glut-L2/3 IT RSP Glut-L2/3 IT RSP Glut_1","WMB-IT-ET Glut-L2/3 IT RSP Glut-L2/3 IT RSP Glut_2","WMB-IT-ET Glut-L4 RSP-ACA Glut-L4 RSP-ACA Glut_1","WMB-IT-ET Glut-L5 ET CTX Glut-L5 ET CTX Glut_1","WMB-IT-ET Glut-L5 ET CTX Glut-L5 ET CTX Glut_2","WMB-IT-ET Glut-L5 ET CTX Glut-L5 ET CTX Glut_3","WMB-IT-ET Glut-L5 ET CTX Glut-L5 ET CTX Glut_4","WMB-IT-ET Glut-L5 ET CTX Glut-L5 ET CTX Glut_5","WMB-IT-ET Glut-L5 ET CTX Glut-L5 ET CTX Glut_6","WMB-IT-ET Glut-SUB-ProS Glut-SUB-ProS Glut_1","WMB-IT-ET Glut-SUB-ProS Glut-SUB-ProS Glut_2","WMB-IT-ET Glut-SUB-ProS Glut-SUB-ProS Glut_3","WMB-IT-ET Glut-L5 PPP Glut-L5 PPP Glut_1","WMB-IT-ET Glut-CA2-FC-IG Glut-CA2-FC-IG Glut_1","WMB-IT-ET Glut-CA2-FC-IG Glut-CA2-FC-IG Glut_2","WMB-IT-ET Glut-NLOT Rho Glut-NLOT Rho Glut_1","WMB-NP-CT-L6b Glut-L6b EPd Glut-L6b EPd Glut_1","WMB-NP-CT-L6b Glut-L6b EPd Glut-L6b EPd Glut_2","WMB-NP-CT-L6b Glut-L6b EPd Glut-L6b EPd Glut_3","WMB-NP-CT-L6b Glut-L6b/CT ENT Glut-L6b/CT ENT Glut_1","WMB-NP-CT-L6b Glut-L6b/CT ENT Glut-L6b/CT ENT Glut_2","WMB-NP-CT-L6b Glut-L6b/CT ENT Glut-L6b/CT ENT Glut_3","WMB-NP-CT-L6b Glut-L6b/CT ENT Glut-L6b/CT ENT Glut_4","WMB-NP-CT-L6b Glut-L6b CTX Glut-L6b CTX Glut_1","WMB-NP-CT-L6b Glut-L6b CTX Glut-L6b CTX Glut_2","WMB-NP-CT-L6b Glut-L6b CTX Glut-L6b CTX Glut_3","WMB-NP-CT-L6b Glut-L6b CTX Glut-L6b CTX Glut_4","WMB-NP-CT-L6b Glut-L6 CT CTX Glut-L6 CT CTX Glut_1","WMB-NP-CT-L6b Glut-L6 CT CTX Glut-L6 CT CTX Glut_2","WMB-NP-CT-L6b Glut-L6 CT CTX Glut-L6 CT CTX Glut_3","WMB-NP-CT-L6b Glut-L6 CT CTX Glut-L6 CT CTX Glut_4","WMB-NP-CT-L6b Glut-L6 CT CTX Glut-L6 CT CTX Glut_5","WMB-NP-CT-L6b Glut-L6 CT CTX Glut-L6 CT CTX Glut_6","WMB-NP-CT-L6b Glut-CT SUB Glut-CT SUB Glut_1","WMB-NP-CT-L6b Glut-CT SUB Glut-CT SUB Glut_2","WMB-NP-CT-L6b Glut-L5 NP CTX Glut-L5 NP CTX Glut_1","WMB-NP-CT-L6b Glut-L5 NP CTX Glut-L5 NP CTX Glut_2","WMB-NP-CT-L6b Glut-L5 NP CTX Glut-L5 NP CTX Glut_3","WMB-NP-CT-L6b Glut-L5 NP CTX Glut-L5 NP CTX Glut_4","WMB-NP-CT-L6b Glut-L5 NP CTX Glut-L5 NP CTX Glut_5","WMB-NP-CT-L6b Glut-NP SUB Glut-NP SUB Glut_1","WMB-NP-CT-L6b Glut-NP SUB Glut-NP SUB Glut_2","WMB-NP-CT-L6b Glut-NP PPP Glut-NP PPP Glut_1","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut-OB Eomes Ms4a15 Glut_1","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut-OB Eomes Ms4a15 Glut_2","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut-OB Eomes Ms4a15 Glut_3","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut-OB Eomes Ms4a15 Glut_4","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut-OB Eomes Ms4a15 Glut_5","WMB-OB-CR Glut-HPF CR Glut-HPF CR Glut_1","WMB-DG-IMN Glut-DG Glut-DG Glut_1","WMB-DG-IMN Glut-DG Glut-DG Glut_2","WMB-DG-IMN Glut-DG Glut-DG Glut_3","WMB-DG-IMN Glut-DG Glut-DG Glut_4","WMB-DG-IMN Glut-DG-PIR Ex IMN-DG-PIR Ex IMN_1","WMB-DG-IMN Glut-DG-PIR Ex IMN-DG-PIR Ex IMN_2","WMB-DG-IMN Glut-DG-PIR Ex IMN-DG-PIR Ex IMN_3","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba-OB Meis2 Thsd7b Gaba_1","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba-OB Meis2 Thsd7b Gaba_2","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba-OB Meis2 Thsd7b Gaba_3","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba-OB Meis2 Thsd7b Gaba_4","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba-OB Meis2 Thsd7b Gaba_5","WMB-OB-IMN GABA-OB Trdn Gaba-OB Trdn Gaba_1","WMB-OB-IMN GABA-OB Trdn Gaba-OB Trdn Gaba_2","WMB-OB-IMN GABA-OB-in Frmd7 Gaba-OB-in Frmd7 Gaba_1","WMB-OB-IMN GABA-OB-in Frmd7 Gaba-OB-in Frmd7 Gaba_2","WMB-OB-IMN GABA-OB-in Frmd7 Gaba-OB-in Frmd7 Gaba_3","WMB-OB-IMN GABA-OB-in Frmd7 Gaba-OB-in Frmd7 Gaba_4","WMB-OB-IMN GABA-OB-in Frmd7 Gaba-OB-in Frmd7 Gaba_5","WMB-OB-IMN GABA-OB-in Frmd7 Gaba-OB-in Frmd7 Gaba_6","WMB-OB-IMN GABA-OB-in Frmd7 Gaba-OB-in Frmd7 Gaba_7","WMB-OB-IMN GABA-OB-in Frmd7 Gaba-OB-in Frmd7 Gaba_8","WMB-OB-IMN GABA-OB-out Frmd7 Gaba-OB-out Frmd7 Gaba_1","WMB-OB-IMN GABA-OB-out Frmd7 Gaba-OB-out Frmd7 Gaba_2","WMB-OB-IMN GABA-OB-out Frmd7 Gaba-OB-out Frmd7 Gaba_3","WMB-OB-IMN GABA-OB-mi Frmd7 Gaba-OB-mi Frmd7 Gaba_1","WMB-OB-IMN GABA-OB Dopa-Gaba-OB Dopa-Gaba_1","WMB-OB-IMN GABA-OB Dopa-Gaba-OB Dopa-Gaba_2","WMB-OB-IMN GABA-OB Dopa-Gaba-OB Dopa-Gaba_3","WMB-OB-IMN GABA-OB Dopa-Gaba-OB Dopa-Gaba_4","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN-OB-STR-CTX Inh IMN_1","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN-OB-STR-CTX Inh IMN_2","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN-OB-STR-CTX Inh IMN_3","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN-OB-STR-CTX Inh IMN_4","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN-OB-STR-CTX Inh IMN_5","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN-OB-STR-CTX Inh IMN_6","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN-OB-STR-CTX Inh IMN_7","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_1","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_2","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_3","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_4","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_5","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_6","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_7","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_8","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_9","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_10","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_11","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_12","WMB-CTX-CGE GABA-Sncg Gaba-Sncg Gaba_1","WMB-CTX-CGE GABA-Sncg Gaba-Sncg Gaba_2","WMB-CTX-CGE GABA-Sncg Gaba-Sncg Gaba_3","WMB-CTX-CGE GABA-Sncg Gaba-Sncg Gaba_4","WMB-CTX-CGE GABA-Sncg Gaba-Sncg Gaba_5","WMB-CTX-CGE GABA-Sncg Gaba-Sncg Gaba_6","WMB-CTX-CGE GABA-Sncg Gaba-Sncg Gaba_7","WMB-CTX-CGE GABA-Sncg Gaba-Sncg Gaba_8","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba-RHP-COA Ndnf Gaba_1","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba-RHP-COA Ndnf Gaba_2","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba-RHP-COA Ndnf Gaba_3","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba-RHP-COA Ndnf Gaba_4","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba-RHP-COA Ndnf Gaba_5","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba-RHP-COA Ndnf Gaba_6","WMB-CTX-CGE GABA-Lamp5 Gaba-Lamp5 Gaba_1","WMB-CTX-CGE GABA-Lamp5 Gaba-Lamp5 Gaba_2","WMB-CTX-CGE GABA-Lamp5 Gaba-Lamp5 Gaba_3","WMB-CTX-CGE GABA-Lamp5 Gaba-Lamp5 Gaba_4","WMB-CTX-MGE GABA-Lamp5 Lhx6 Gaba-Lamp5 Lhx6 Gaba_1","WMB-CTX-MGE GABA-Pvalb chandelier Gaba-Pvalb chandelier Gaba_1","WMB-CTX-MGE GABA-Pvalb Gaba-Pvalb Gaba_1","WMB-CTX-MGE GABA-Pvalb Gaba-Pvalb Gaba_2","WMB-CTX-MGE GABA-Pvalb Gaba-Pvalb Gaba_3","WMB-CTX-MGE GABA-Pvalb Gaba-Pvalb Gaba_4","WMB-CTX-MGE GABA-Pvalb Gaba-Pvalb Gaba_5","WMB-CTX-MGE GABA-Pvalb Gaba-Pvalb Gaba_6","WMB-CTX-MGE GABA-Pvalb Gaba-Pvalb Gaba_7","WMB-CTX-MGE GABA-Pvalb Gaba-Pvalb Gaba_8","WMB-CTX-MGE GABA-Pvalb Gaba-Pvalb Gaba_9","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_1","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_2","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_3","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_4","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_5","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_6","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_7","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_8","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_9","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_10","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_11","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_12","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_13","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_14","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_15","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_16","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_17","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_18","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_19"],"labels":["WMB","IT-ET Glut","NP-CT-L6b Glut","OB-CR Glut","DG-IMN Glut","OB-IMN GABA","CTX-CGE GABA","CTX-MGE GABA","CLA-EPd-CTX Car3 Glut","IT EP-CLA Glut","L5/6 IT TPE-ENT Glut","L6 IT CTX Glut","L5 IT CTX Glut","L4/5 IT CTX Glut","L2/3 IT CTX Glut","L2/3 IT ENT Glut","L2/3 IT PIR-ENTl Glut","IT AON-TT-DP Glut","L2 IT ENT-po Glut","MEA Slc17a7 Glut","COAp Grxcr2 Glut","LA-BLA-BMA-PA Glut","ENTmv-PA-COAp Glut","CA1-ProS Glut","CA3 Glut","L2 IT PPP-APr Glut","L2/3 IT PPP Glut","L2/3 IT RSP Glut","L4 RSP-ACA Glut","L5 ET CTX Glut","SUB-ProS Glut","L5 PPP Glut","CA2-FC-IG Glut","NLOT Rho Glut","L6b EPd Glut","L6b/CT ENT Glut","L6b CTX Glut","L6 CT CTX Glut","CT SUB Glut","L5 NP CTX Glut","NP SUB Glut","NP PPP Glut","OB Eomes Ms4a15 Glut","HPF CR Glut","DG Glut","DG-PIR Ex IMN","OB Meis2 Thsd7b Gaba","OB Trdn Gaba","OB-in Frmd7 Gaba","OB-out Frmd7 Gaba","OB-mi Frmd7 Gaba","OB Dopa-Gaba","OB-STR-CTX Inh IMN","Vip Gaba","Sncg Gaba","RHP-COA Ndnf Gaba","Lamp5 Gaba","Lamp5 Lhx6 Gaba","Pvalb chandelier Gaba","Pvalb Gaba","Sst Gaba","CLA-EPd-CTX Car3 Glut_1","CLA-EPd-CTX Car3 Glut_2","IT EP-CLA Glut_1","IT EP-CLA Glut_2","IT EP-CLA Glut_3","IT EP-CLA Glut_4","L5/6 IT TPE-ENT Glut_1","L5/6 IT TPE-ENT Glut_2","L5/6 IT TPE-ENT Glut_3","L5/6 IT TPE-ENT Glut_4","L5/6 IT TPE-ENT Glut_5","L5/6 IT TPE-ENT Glut_6","L6 IT CTX Glut_1","L6 IT CTX Glut_2","L6 IT CTX Glut_3","L6 IT CTX Glut_4","L6 IT CTX Glut_5","L5 IT CTX Glut_1","L5 IT CTX Glut_2","L5 IT CTX Glut_3","L5 IT CTX Glut_4","L5 IT CTX Glut_5","L4/5 IT CTX Glut_1","L4/5 IT CTX Glut_2","L4/5 IT CTX Glut_3","L4/5 IT CTX Glut_4","L4/5 IT CTX Glut_5","L4/5 IT CTX Glut_6","L2/3 IT CTX Glut_1","L2/3 IT CTX Glut_2","L2/3 IT CTX Glut_3","L2/3 IT CTX Glut_4","L2/3 IT ENT Glut_1","L2/3 IT ENT Glut_2","L2/3 IT ENT Glut_3","L2/3 IT ENT Glut_4","L2/3 IT ENT Glut_5","L2/3 IT ENT Glut_6","L2/3 IT PIR-ENTl Glut_1","L2/3 IT PIR-ENTl Glut_2","L2/3 IT PIR-ENTl Glut_3","L2/3 IT PIR-ENTl Glut_4","L2/3 IT PIR-ENTl Glut_5","L2/3 IT PIR-ENTl Glut_6","L2/3 IT PIR-ENTl Glut_7","IT AON-TT-DP Glut_1","IT AON-TT-DP Glut_2","IT AON-TT-DP Glut_3","IT AON-TT-DP Glut_4","IT AON-TT-DP Glut_5","L2 IT ENT-po Glut_1","L2 IT ENT-po Glut_2","L2 IT ENT-po Glut_3","L2 IT ENT-po Glut_4","MEA Slc17a7 Glut_1","MEA Slc17a7 Glut_2","MEA Slc17a7 Glut_3","COAp Grxcr2 Glut_1","COAp Grxcr2 Glut_2","LA-BLA-BMA-PA Glut_1","LA-BLA-BMA-PA Glut_2","LA-BLA-BMA-PA Glut_3","LA-BLA-BMA-PA Glut_4","LA-BLA-BMA-PA Glut_5","LA-BLA-BMA-PA Glut_6","ENTmv-PA-COAp Glut_1","ENTmv-PA-COAp Glut_2","ENTmv-PA-COAp Glut_3","CA1-ProS Glut_1","CA1-ProS Glut_2","CA1-ProS Glut_3","CA1-ProS Glut_4","CA1-ProS Glut_5","CA1-ProS Glut_6","CA3 Glut_1","CA3 Glut_2","CA3 Glut_3","CA3 Glut_4","CA3 Glut_5","L2 IT PPP-APr Glut_1","L2 IT PPP-APr Glut_2","L2 IT PPP-APr Glut_3","L2 IT PPP-APr Glut_4","L2/3 IT PPP Glut_1","L2/3 IT PPP Glut_2","L2/3 IT PPP Glut_3","L2/3 IT RSP Glut_1","L2/3 IT RSP Glut_2","L4 RSP-ACA Glut_1","L5 ET CTX Glut_1","L5 ET CTX Glut_2","L5 ET CTX Glut_3","L5 ET CTX Glut_4","L5 ET CTX Glut_5","L5 ET CTX Glut_6","SUB-ProS Glut_1","SUB-ProS Glut_2","SUB-ProS Glut_3","L5 PPP Glut_1","CA2-FC-IG Glut_1","CA2-FC-IG Glut_2","NLOT Rho Glut_1","L6b EPd Glut_1","L6b EPd Glut_2","L6b EPd Glut_3","L6b/CT ENT Glut_1","L6b/CT ENT Glut_2","L6b/CT ENT Glut_3","L6b/CT ENT Glut_4","L6b CTX Glut_1","L6b CTX Glut_2","L6b CTX Glut_3","L6b CTX Glut_4","L6 CT CTX Glut_1","L6 CT CTX Glut_2","L6 CT CTX Glut_3","L6 CT CTX Glut_4","L6 CT CTX Glut_5","L6 CT CTX Glut_6","CT SUB Glut_1","CT SUB Glut_2","L5 NP CTX Glut_1","L5 NP CTX Glut_2","L5 NP CTX Glut_3","L5 NP CTX Glut_4","L5 NP CTX Glut_5","NP SUB Glut_1","NP SUB Glut_2","NP PPP Glut_1","OB Eomes Ms4a15 Glut_1","OB Eomes Ms4a15 Glut_2","OB Eomes Ms4a15 Glut_3","OB Eomes Ms4a15 Glut_4","OB Eomes Ms4a15 Glut_5","HPF CR Glut_1","DG Glut_1","DG Glut_2","DG Glut_3","DG Glut_4","DG-PIR Ex IMN_1","DG-PIR Ex IMN_2","DG-PIR Ex IMN_3","OB Meis2 Thsd7b Gaba_1","OB Meis2 Thsd7b Gaba_2","OB Meis2 Thsd7b Gaba_3","OB Meis2 Thsd7b Gaba_4","OB Meis2 Thsd7b Gaba_5","OB Trdn Gaba_1","OB Trdn Gaba_2","OB-in Frmd7 Gaba_1","OB-in Frmd7 Gaba_2","OB-in Frmd7 Gaba_3","OB-in Frmd7 Gaba_4","OB-in Frmd7 Gaba_5","OB-in Frmd7 Gaba_6","OB-in Frmd7 Gaba_7","OB-in Frmd7 Gaba_8","OB-out Frmd7 Gaba_1","OB-out Frmd7 Gaba_2","OB-out Frmd7 Gaba_3","OB-mi Frmd7 Gaba_1","OB Dopa-Gaba_1","OB Dopa-Gaba_2","OB Dopa-Gaba_3","OB Dopa-Gaba_4","OB-STR-CTX Inh IMN_1","OB-STR-CTX Inh IMN_2","OB-STR-CTX Inh IMN_3","OB-STR-CTX Inh IMN_4","OB-STR-CTX Inh IMN_5","OB-STR-CTX Inh IMN_6","OB-STR-CTX Inh IMN_7","Vip Gaba_1","Vip Gaba_2","Vip Gaba_3","Vip Gaba_4","Vip Gaba_5","Vip Gaba_6","Vip Gaba_7","Vip Gaba_8","Vip Gaba_9","Vip Gaba_10","Vip Gaba_11","Vip Gaba_12","Sncg Gaba_1","Sncg Gaba_2","Sncg Gaba_3","Sncg Gaba_4","Sncg Gaba_5","Sncg Gaba_6","Sncg Gaba_7","Sncg Gaba_8","RHP-COA Ndnf Gaba_1","RHP-COA Ndnf Gaba_2","RHP-COA Ndnf Gaba_3","RHP-COA Ndnf Gaba_4","RHP-COA Ndnf Gaba_5","RHP-COA Ndnf Gaba_6","Lamp5 Gaba_1","Lamp5 Gaba_2","Lamp5 Gaba_3","Lamp5 Gaba_4","Lamp5 Lhx6 Gaba_1","Pvalb chandelier Gaba_1","Pvalb Gaba_1","Pvalb Gaba_2","Pvalb Gaba_3","Pvalb Gaba_4","Pvalb Gaba_5","Pvalb Gaba_6","Pvalb Gaba_7","Pvalb Gaba_8","Pvalb Gaba_9","Sst Gaba_1","Sst Gaba_2","Sst Gaba_3","Sst Gaba_4","Sst Gaba_5","Sst Gaba_6","Sst Gaba_7","Sst Gaba_8","Sst Gaba_9","Sst Gaba_10","Sst Gaba_11","Sst Gaba_12","Sst Gaba_13","Sst Gaba_14","Sst Gaba_15","Sst Gaba_16","Sst Gaba_17","Sst Gaba_18","Sst Gaba_19"],"parents":["","WMB","WMB","WMB","WMB","WMB","WMB","WMB","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-NP-CT-L6b Glut","WMB-NP-CT-L6b Glut","WMB-NP-CT-L6b Glut","WMB-NP-CT-L6b Glut","WMB-NP-CT-L6b Glut","WMB-NP-CT-L6b Glut","WMB-NP-CT-L6b Glut","WMB-NP-CT-L6b Glut","WMB-OB-CR Glut","WMB-OB-CR Glut","WMB-DG-IMN Glut","WMB-DG-IMN Glut","WMB-OB-IMN GABA","WMB-OB-IMN GABA","WMB-OB-IMN GABA","WMB-OB-IMN GABA","WMB-OB-IMN GABA","WMB-OB-IMN GABA","WMB-OB-IMN GABA","WMB-CTX-CGE GABA","WMB-CTX-CGE GABA","WMB-CTX-CGE GABA","WMB-CTX-CGE GABA","WMB-CTX-MGE GABA","WMB-CTX-MGE GABA","WMB-CTX-MGE GABA","WMB-CTX-MGE GABA","WMB-IT-ET Glut-CLA-EPd-CTX Car3 Glut","WMB-IT-ET Glut-CLA-EPd-CTX Car3 Glut","WMB-IT-ET Glut-IT EP-CLA Glut","WMB-IT-ET Glut-IT EP-CLA Glut","WMB-IT-ET Glut-IT EP-CLA Glut","WMB-IT-ET Glut-IT EP-CLA Glut","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut","WMB-IT-ET Glut-L6 IT CTX Glut","WMB-IT-ET Glut-L6 IT CTX Glut","WMB-IT-ET Glut-L6 IT CTX Glut","WMB-IT-ET Glut-L6 IT CTX Glut","WMB-IT-ET Glut-L6 IT CTX Glut","WMB-IT-ET Glut-L5 IT CTX Glut","WMB-IT-ET Glut-L5 IT CTX Glut","WMB-IT-ET Glut-L5 IT CTX Glut","WMB-IT-ET Glut-L5 IT CTX Glut","WMB-IT-ET Glut-L5 IT CTX Glut","WMB-IT-ET Glut-L4/5 IT CTX Glut","WMB-IT-ET Glut-L4/5 IT CTX Glut","WMB-IT-ET Glut-L4/5 IT CTX Glut","WMB-IT-ET Glut-L4/5 IT CTX Glut","WMB-IT-ET Glut-L4/5 IT CTX Glut","WMB-IT-ET Glut-L4/5 IT CTX Glut","WMB-IT-ET Glut-L2/3 IT CTX Glut","WMB-IT-ET Glut-L2/3 IT CTX Glut","WMB-IT-ET Glut-L2/3 IT CTX Glut","WMB-IT-ET Glut-L2/3 IT CTX Glut","WMB-IT-ET Glut-L2/3 IT ENT Glut","WMB-IT-ET Glut-L2/3 IT ENT Glut","WMB-IT-ET Glut-L2/3 IT ENT Glut","WMB-IT-ET Glut-L2/3 IT ENT Glut","WMB-IT-ET Glut-L2/3 IT ENT Glut","WMB-IT-ET Glut-L2/3 IT ENT Glut","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut","WMB-IT-ET Glut-IT AON-TT-DP Glut","WMB-IT-ET Glut-IT AON-TT-DP Glut","WMB-IT-ET Glut-IT AON-TT-DP Glut","WMB-IT-ET Glut-IT AON-TT-DP Glut","WMB-IT-ET Glut-IT AON-TT-DP Glut","WMB-IT-ET Glut-L2 IT ENT-po Glut","WMB-IT-ET Glut-L2 IT ENT-po Glut","WMB-IT-ET Glut-L2 IT ENT-po Glut","WMB-IT-ET Glut-L2 IT ENT-po Glut","WMB-IT-ET Glut-MEA Slc17a7 Glut","WMB-IT-ET Glut-MEA Slc17a7 Glut","WMB-IT-ET Glut-MEA Slc17a7 Glut","WMB-IT-ET Glut-COAp Grxcr2 Glut","WMB-IT-ET Glut-COAp Grxcr2 Glut","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut","WMB-IT-ET Glut-ENTmv-PA-COAp Glut","WMB-IT-ET Glut-ENTmv-PA-COAp Glut","WMB-IT-ET Glut-ENTmv-PA-COAp Glut","WMB-IT-ET Glut-CA1-ProS Glut","WMB-IT-ET Glut-CA1-ProS Glut","WMB-IT-ET Glut-CA1-ProS Glut","WMB-IT-ET Glut-CA1-ProS Glut","WMB-IT-ET Glut-CA1-ProS Glut","WMB-IT-ET Glut-CA1-ProS Glut","WMB-IT-ET Glut-CA3 Glut","WMB-IT-ET Glut-CA3 Glut","WMB-IT-ET Glut-CA3 Glut","WMB-IT-ET Glut-CA3 Glut","WMB-IT-ET Glut-CA3 Glut","WMB-IT-ET Glut-L2 IT PPP-APr Glut","WMB-IT-ET Glut-L2 IT PPP-APr Glut","WMB-IT-ET Glut-L2 IT PPP-APr Glut","WMB-IT-ET Glut-L2 IT PPP-APr Glut","WMB-IT-ET Glut-L2/3 IT PPP Glut","WMB-IT-ET Glut-L2/3 IT PPP Glut","WMB-IT-ET Glut-L2/3 IT PPP Glut","WMB-IT-ET Glut-L2/3 IT RSP Glut","WMB-IT-ET Glut-L2/3 IT RSP Glut","WMB-IT-ET Glut-L4 RSP-ACA Glut","WMB-IT-ET Glut-L5 ET CTX Glut","WMB-IT-ET Glut-L5 ET CTX Glut","WMB-IT-ET Glut-L5 ET CTX Glut","WMB-IT-ET Glut-L5 ET CTX Glut","WMB-IT-ET Glut-L5 ET CTX Glut","WMB-IT-ET Glut-L5 ET CTX Glut","WMB-IT-ET Glut-SUB-ProS Glut","WMB-IT-ET Glut-SUB-ProS Glut","WMB-IT-ET Glut-SUB-ProS Glut","WMB-IT-ET Glut-L5 PPP Glut","WMB-IT-ET Glut-CA2-FC-IG Glut","WMB-IT-ET Glut-CA2-FC-IG Glut","WMB-IT-ET Glut-NLOT Rho Glut","WMB-NP-CT-L6b Glut-L6b EPd Glut","WMB-NP-CT-L6b Glut-L6b EPd Glut","WMB-NP-CT-L6b Glut-L6b EPd Glut","WMB-NP-CT-L6b Glut-L6b/CT ENT Glut","WMB-NP-CT-L6b Glut-L6b/CT ENT Glut","WMB-NP-CT-L6b Glut-L6b/CT ENT Glut","WMB-NP-CT-L6b Glut-L6b/CT ENT Glut","WMB-NP-CT-L6b Glut-L6b CTX Glut","WMB-NP-CT-L6b Glut-L6b CTX Glut","WMB-NP-CT-L6b Glut-L6b CTX Glut","WMB-NP-CT-L6b Glut-L6b CTX Glut","WMB-NP-CT-L6b Glut-L6 CT CTX Glut","WMB-NP-CT-L6b Glut-L6 CT CTX Glut","WMB-NP-CT-L6b Glut-L6 CT CTX Glut","WMB-NP-CT-L6b Glut-L6 CT CTX Glut","WMB-NP-CT-L6b Glut-L6 CT CTX Glut","WMB-NP-CT-L6b Glut-L6 CT CTX Glut","WMB-NP-CT-L6b Glut-CT SUB Glut","WMB-NP-CT-L6b Glut-CT SUB Glut","WMB-NP-CT-L6b Glut-L5 NP CTX Glut","WMB-NP-CT-L6b Glut-L5 NP CTX Glut","WMB-NP-CT-L6b Glut-L5 NP CTX Glut","WMB-NP-CT-L6b Glut-L5 NP CTX Glut","WMB-NP-CT-L6b Glut-L5 NP CTX Glut","WMB-NP-CT-L6b Glut-NP SUB Glut","WMB-NP-CT-L6b Glut-NP SUB Glut","WMB-NP-CT-L6b Glut-NP PPP Glut","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut","WMB-OB-CR Glut-HPF CR Glut","WMB-DG-IMN Glut-DG Glut","WMB-DG-IMN Glut-DG Glut","WMB-DG-IMN Glut-DG Glut","WMB-DG-IMN Glut-DG Glut","WMB-DG-IMN Glut-DG-PIR Ex IMN","WMB-DG-IMN Glut-DG-PIR Ex IMN","WMB-DG-IMN Glut-DG-PIR Ex IMN","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba","WMB-OB-IMN GABA-OB Trdn Gaba","WMB-OB-IMN GABA-OB Trdn Gaba","WMB-OB-IMN GABA-OB-in Frmd7 Gaba","WMB-OB-IMN GABA-OB-in Frmd7 Gaba","WMB-OB-IMN GABA-OB-in Frmd7 Gaba","WMB-OB-IMN GABA-OB-in Frmd7 Gaba","WMB-OB-IMN GABA-OB-in Frmd7 Gaba","WMB-OB-IMN GABA-OB-in Frmd7 Gaba","WMB-OB-IMN GABA-OB-in Frmd7 Gaba","WMB-OB-IMN GABA-OB-in Frmd7 Gaba","WMB-OB-IMN GABA-OB-out Frmd7 Gaba","WMB-OB-IMN GABA-OB-out Frmd7 Gaba","WMB-OB-IMN GABA-OB-out Frmd7 Gaba","WMB-OB-IMN GABA-OB-mi Frmd7 Gaba","WMB-OB-IMN GABA-OB Dopa-Gaba","WMB-OB-IMN GABA-OB Dopa-Gaba","WMB-OB-IMN GABA-OB Dopa-Gaba","WMB-OB-IMN GABA-OB Dopa-Gaba","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Sncg Gaba","WMB-CTX-CGE GABA-Sncg Gaba","WMB-CTX-CGE GABA-Sncg Gaba","WMB-CTX-CGE GABA-Sncg Gaba","WMB-CTX-CGE GABA-Sncg Gaba","WMB-CTX-CGE GABA-Sncg Gaba","WMB-CTX-CGE GABA-Sncg Gaba","WMB-CTX-CGE GABA-Sncg Gaba","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba","WMB-CTX-CGE GABA-Lamp5 Gaba","WMB-CTX-CGE GABA-Lamp5 Gaba","WMB-CTX-CGE GABA-Lamp5 Gaba","WMB-CTX-CGE GABA-Lamp5 Gaba","WMB-CTX-MGE GABA-Lamp5 Lhx6 Gaba","WMB-CTX-MGE GABA-Pvalb chandelier Gaba","WMB-CTX-MGE GABA-Pvalb Gaba","WMB-CTX-MGE GABA-Pvalb Gaba","WMB-CTX-MGE GABA-Pvalb Gaba","WMB-CTX-MGE GABA-Pvalb Gaba","WMB-CTX-MGE GABA-Pvalb Gaba","WMB-CTX-MGE GABA-Pvalb Gaba","WMB-CTX-MGE GABA-Pvalb Gaba","WMB-CTX-MGE GABA-Pvalb Gaba","WMB-CTX-MGE GABA-Pvalb Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba"],"values":[1863420,1095484,310198,4767,84352,107502,139032,122085,30090,24813,11854,108913,66624,369221,172213,21111,61035,32454,3704,10120,13481,20485,3434,31474,5229,5176,28457,33940,6615,24721,6844,1428,640,1408,4060,26788,20098,201912,7816,43739,2756,3029,1651,3116,82343,2009,2163,3507,79816,5997,611,4662,10746,62447,18840,3261,54484,8913,3470,42314,67388,29034,1056,19918,3433,798,664,2080,4663,2902,1791,225,193,18901,48729,14953,18607,7723,14583,20805,21099,7677,2460,85830,80792,11736,23147,76805,90911,11019,128897,14297,18000,1299,866,2527,11921,3557,941,12443,19494,7304,16330,417,1133,3914,4528,6979,3190,1557,16200,350,992,495,1867,2715,3657,3748,1147,12334,3385,6385,5187,2700,1803,1025,1528,943,963,19061,4609,1492,3493,898,1921,763,962,1039,2147,318,784,2426,1226,740,2345,20603,5509,7924,26016,6615,4582,5363,6268,2426,3895,2187,3490,2251,1103,1428,143,497,1408,429,1875,1756,8083,2247,1289,15169,10264,5499,3637,698,76047,68930,14692,4562,35459,2222,5449,2367,2034,24479,13915,2521,790,311,2445,3029,259,678,294,156,264,3116,1263,74950,964,5166,93,1200,716,597,512,193,678,183,996,2511,38299,34048,2063,1876,2172,216,739,403,5366,435,196,611,4296,157,71,138,1628,3459,774,4384,448,21,32,6998,5710,7526,6083,14713,8474,1083,1511,1441,140,3730,5038,2256,2349,7737,1900,1065,1928,429,1176,1365,336,695,167,426,272,41362,7040,3949,2133,8913,3470,2546,650,18939,6693,3190,1711,567,7777,241,6875,1183,2004,14335,3999,725,3740,4145,3432,6141,2677,2126,4064,2464,2893,4322,956,644,663],"type":"sunburst","sort":false,"marker":{"colors":["white","#FA0087","#61e2a4","#D00000","#16f2f2","#1b4332","#CCFF33","#f954ee","#64c2fc","#1F665D","#C400FF","#C0FF4D","#660F38","#3DCCB7","#E9530F","#1F46CC","#940099","#FF004B","#00FFC4","#456C99","#61CC5C","#BBFF73","#B6CC7A","#0F3466","#C973FF","#0F6632","#925C99","#999145","#FFF226","#99A2FF","#FF9999","#6B995C","#FF7391","#FFD573","#CC827A","#CC0098","#9EFF99","#34661F","#440066","#7B7ACC","#99CAFF","#B8FF26","#7F1FCC","#919900","#CC2400","#3D53CC","#FF99F7","#684599","#FF0073","#CC6D3D","#FF99A7","#96CC7A","#819945","#663D47","#FFE999","#0003FF","#FF764D","#26FF3E","#2F992E","#661F3B","#99F2FF","#99822E","#170F66","#994563","#1F4666","#694599","#5CAACC","#2E3966","#00B2CC","#172C99","#990073","#99172F","#3B2E66","#952E99","#2E5266","#661799","#991759","#6A992E","#8D9917","#456199","#66530F","#FFFE99","#651F66","#3B9900","#4DFFA3","#991768","#0F6619","#639917","#009909","#998817","#CC7A8F","#5C6899","#5C9972","#990030","#5C998D","#73F7FF","#FF4DAE","#FF99F9","#179921","#00FF39","#995C77","#66001D","#280066","#1FCC9A","#B87ACC","#5C8A99","#8626FF","#3D6652","#C773FF","#666400","#1F3E66","#5A2E99","#992E57","#5CCCBD","#CC5CA0","#A099FF","#5CCCC9","#7E5C99","#82995C","#330F66","#99FFE5","#99174B","#992E6E","#633D66","#660F43","#CC867A","#99735C","#CC6A3D","#95CC7A","#8800CC","#4D9945","#993E00","#2E4999","#FF00CE","#2A0F66","#997645","#00FFC5","#6ACC00","#991776","#712E99","#433D66","#002BCC","#266DFF","#3D65CC","#CC4D00","#FF007A","#635C99","#2E7899","#FFAE00","#998D2E","#5A0099","#FF2200","#5CCCB1","#99522E","#B34DFF","#66400F","#602E66","#5C60CC","#2F2E66","#CC1F30","#662E99","#661F20","#7D5CCC","#82CC5C","#994547","#81CC3D","#66643D","#699945","#B4CC5C","#5C9965","#5C9979","#66533D","#5C9986","#00FFE1","#CC3D77","#3DCC96","#49660F","#3E662E","#00FFFD","#1F52CC","#662D0F","#FF9999","#26FF73","#935C99","#662E53","#54661F","#FF73DB","#006614","#CC9A5C","#574599","#FF737E","#51663D","#00993B","#7ACCA8","#AECC1F","#662E59","#009BCC","#F573FF","#FF7726","#992E41","#389917","#CC7A3D","#643DCC","#9F00CC","#0005FF","#3DCC86","#664A3D","#459990","#992E33","#3D4966","#A6FF99","#00664C","#D5FF73","#80FF26","#BD1FCC","#995C71","#FFBF26","#990001","#4A0066","#4DFF68","#662000","#715CCC","#CC5C5C","#994F00","#2cb26d","#CC7800","#2d42b7","#990062","#52CC3D","#2E3199","#CC3E1F","#99462E","#FF0500","#2E6C99","#10660F","#17994C","#715C99","#7200CC","#7A96CC","#CC5CC5","#CC815C","#CC3D87","#66372E","#5C85CC","#F5FF99","#0F6622","#785C99","#FF2671","#52992E","#000B99","#178299","#91CC3D","#654DFF","#5CCC7F","#C0CC5C","#00CC76","#2E5866","#9BCC5C","#CC771F","#DC00FF","#422E99","#263DFF","#C0CC3D","#FF584D","#261F66","#455899","#66240F","#991793","#542E66","#D899FF","#992E91","#3D55CC","#662100","#99FFAD","#2E6662","#E5FF73","#AE5CCC","#EF99FF","#B0FF26","#8800FF","#5C00CC","#990084","#662E47","#A25CCC","#00661F","#997100","#661A0F","#7D2E99","#CC3D68","#5C91CC","#516600","#FF000A","#73FFC9"]},"domain":{"column":1},"branchvalues":"total","inherit":true}},"layout":{"margin":{"b":0,"l":0,"t":0,"r":0},"grid":{"columns":1,"rows":1},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"ids":["WMB","WMB-IT-ET Glut","WMB-NP-CT-L6b Glut","WMB-OB-CR Glut","WMB-DG-IMN Glut","WMB-OB-IMN GABA","WMB-CTX-CGE GABA","WMB-CTX-MGE GABA","WMB-IT-ET Glut-CLA-EPd-CTX Car3 Glut","WMB-IT-ET Glut-IT EP-CLA Glut","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut","WMB-IT-ET Glut-L6 IT CTX Glut","WMB-IT-ET Glut-L5 IT CTX Glut","WMB-IT-ET Glut-L4/5 IT CTX Glut","WMB-IT-ET Glut-L2/3 IT CTX Glut","WMB-IT-ET Glut-L2/3 IT ENT Glut","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut","WMB-IT-ET Glut-IT AON-TT-DP Glut","WMB-IT-ET Glut-L2 IT ENT-po Glut","WMB-IT-ET Glut-MEA Slc17a7 Glut","WMB-IT-ET Glut-COAp Grxcr2 Glut","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut","WMB-IT-ET Glut-ENTmv-PA-COAp Glut","WMB-IT-ET Glut-CA1-ProS Glut","WMB-IT-ET Glut-CA3 Glut","WMB-IT-ET Glut-L2 IT PPP-APr Glut","WMB-IT-ET Glut-L2/3 IT PPP Glut","WMB-IT-ET Glut-L2/3 IT RSP Glut","WMB-IT-ET Glut-L4 RSP-ACA Glut","WMB-IT-ET Glut-L5 ET CTX Glut","WMB-IT-ET Glut-SUB-ProS Glut","WMB-IT-ET Glut-L5 PPP Glut","WMB-IT-ET Glut-CA2-FC-IG Glut","WMB-IT-ET Glut-NLOT Rho Glut","WMB-NP-CT-L6b Glut-L6b EPd Glut","WMB-NP-CT-L6b Glut-L6b/CT ENT Glut","WMB-NP-CT-L6b Glut-L6b CTX Glut","WMB-NP-CT-L6b Glut-L6 CT CTX Glut","WMB-NP-CT-L6b Glut-CT SUB Glut","WMB-NP-CT-L6b Glut-L5 NP CTX Glut","WMB-NP-CT-L6b Glut-NP SUB Glut","WMB-NP-CT-L6b Glut-NP PPP Glut","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut","WMB-OB-CR Glut-HPF CR Glut","WMB-DG-IMN Glut-DG Glut","WMB-DG-IMN Glut-DG-PIR Ex IMN","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba","WMB-OB-IMN GABA-OB Trdn Gaba","WMB-OB-IMN GABA-OB-in Frmd7 Gaba","WMB-OB-IMN GABA-OB-out Frmd7 Gaba","WMB-OB-IMN GABA-OB-mi Frmd7 Gaba","WMB-OB-IMN GABA-OB Dopa-Gaba","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Sncg Gaba","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba","WMB-CTX-CGE GABA-Lamp5 Gaba","WMB-CTX-MGE GABA-Lamp5 Lhx6 Gaba","WMB-CTX-MGE GABA-Pvalb chandelier Gaba","WMB-CTX-MGE GABA-Pvalb Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-IT-ET Glut-CLA-EPd-CTX Car3 Glut-CLA-EPd-CTX Car3 Glut_1","WMB-IT-ET Glut-CLA-EPd-CTX Car3 Glut-CLA-EPd-CTX Car3 Glut_2","WMB-IT-ET Glut-IT EP-CLA Glut-IT EP-CLA Glut_1","WMB-IT-ET Glut-IT EP-CLA Glut-IT EP-CLA Glut_2","WMB-IT-ET Glut-IT EP-CLA Glut-IT EP-CLA Glut_3","WMB-IT-ET Glut-IT EP-CLA Glut-IT EP-CLA Glut_4","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut-L5/6 IT TPE-ENT Glut_1","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut-L5/6 IT TPE-ENT Glut_2","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut-L5/6 IT TPE-ENT Glut_3","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut-L5/6 IT TPE-ENT Glut_4","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut-L5/6 IT TPE-ENT Glut_5","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut-L5/6 IT TPE-ENT Glut_6","WMB-IT-ET Glut-L6 IT CTX Glut-L6 IT CTX Glut_1","WMB-IT-ET Glut-L6 IT CTX Glut-L6 IT CTX Glut_2","WMB-IT-ET Glut-L6 IT CTX Glut-L6 IT CTX Glut_3","WMB-IT-ET Glut-L6 IT CTX Glut-L6 IT CTX Glut_4","WMB-IT-ET Glut-L6 IT CTX Glut-L6 IT CTX Glut_5","WMB-IT-ET Glut-L5 IT CTX Glut-L5 IT CTX Glut_1","WMB-IT-ET Glut-L5 IT CTX Glut-L5 IT CTX Glut_2","WMB-IT-ET Glut-L5 IT CTX Glut-L5 IT CTX Glut_3","WMB-IT-ET Glut-L5 IT CTX Glut-L5 IT CTX Glut_4","WMB-IT-ET Glut-L5 IT CTX Glut-L5 IT CTX Glut_5","WMB-IT-ET Glut-L4/5 IT CTX Glut-L4/5 IT CTX Glut_1","WMB-IT-ET Glut-L4/5 IT CTX Glut-L4/5 IT CTX Glut_2","WMB-IT-ET Glut-L4/5 IT CTX Glut-L4/5 IT CTX Glut_3","WMB-IT-ET Glut-L4/5 IT CTX Glut-L4/5 IT CTX Glut_4","WMB-IT-ET Glut-L4/5 IT CTX Glut-L4/5 IT CTX Glut_5","WMB-IT-ET Glut-L4/5 IT CTX Glut-L4/5 IT CTX Glut_6","WMB-IT-ET Glut-L2/3 IT CTX Glut-L2/3 IT CTX Glut_1","WMB-IT-ET Glut-L2/3 IT CTX Glut-L2/3 IT CTX Glut_2","WMB-IT-ET Glut-L2/3 IT CTX Glut-L2/3 IT CTX Glut_3","WMB-IT-ET Glut-L2/3 IT CTX Glut-L2/3 IT CTX Glut_4","WMB-IT-ET Glut-L2/3 IT ENT Glut-L2/3 IT ENT Glut_1","WMB-IT-ET Glut-L2/3 IT ENT Glut-L2/3 IT ENT Glut_2","WMB-IT-ET Glut-L2/3 IT ENT Glut-L2/3 IT ENT Glut_3","WMB-IT-ET Glut-L2/3 IT ENT Glut-L2/3 IT ENT Glut_4","WMB-IT-ET Glut-L2/3 IT ENT Glut-L2/3 IT ENT Glut_5","WMB-IT-ET Glut-L2/3 IT ENT Glut-L2/3 IT ENT Glut_6","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut-L2/3 IT PIR-ENTl Glut_1","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut-L2/3 IT PIR-ENTl Glut_2","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut-L2/3 IT PIR-ENTl Glut_3","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut-L2/3 IT PIR-ENTl Glut_4","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut-L2/3 IT PIR-ENTl Glut_5","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut-L2/3 IT PIR-ENTl Glut_6","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut-L2/3 IT PIR-ENTl Glut_7","WMB-IT-ET Glut-IT AON-TT-DP Glut-IT AON-TT-DP Glut_1","WMB-IT-ET Glut-IT AON-TT-DP Glut-IT AON-TT-DP Glut_2","WMB-IT-ET Glut-IT AON-TT-DP Glut-IT AON-TT-DP Glut_3","WMB-IT-ET Glut-IT AON-TT-DP Glut-IT AON-TT-DP Glut_4","WMB-IT-ET Glut-IT AON-TT-DP Glut-IT AON-TT-DP Glut_5","WMB-IT-ET Glut-L2 IT ENT-po Glut-L2 IT ENT-po Glut_1","WMB-IT-ET Glut-L2 IT ENT-po Glut-L2 IT ENT-po Glut_2","WMB-IT-ET Glut-L2 IT ENT-po Glut-L2 IT ENT-po Glut_3","WMB-IT-ET Glut-L2 IT ENT-po Glut-L2 IT ENT-po Glut_4","WMB-IT-ET Glut-MEA Slc17a7 Glut-MEA Slc17a7 Glut_1","WMB-IT-ET Glut-MEA Slc17a7 Glut-MEA Slc17a7 Glut_2","WMB-IT-ET Glut-MEA Slc17a7 Glut-MEA Slc17a7 Glut_3","WMB-IT-ET Glut-COAp Grxcr2 Glut-COAp Grxcr2 Glut_1","WMB-IT-ET Glut-COAp Grxcr2 Glut-COAp Grxcr2 Glut_2","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut-LA-BLA-BMA-PA Glut_1","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut-LA-BLA-BMA-PA Glut_2","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut-LA-BLA-BMA-PA Glut_3","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut-LA-BLA-BMA-PA Glut_4","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut-LA-BLA-BMA-PA Glut_5","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut-LA-BLA-BMA-PA Glut_6","WMB-IT-ET Glut-ENTmv-PA-COAp Glut-ENTmv-PA-COAp Glut_1","WMB-IT-ET Glut-ENTmv-PA-COAp Glut-ENTmv-PA-COAp Glut_2","WMB-IT-ET Glut-ENTmv-PA-COAp Glut-ENTmv-PA-COAp Glut_3","WMB-IT-ET Glut-CA1-ProS Glut-CA1-ProS Glut_1","WMB-IT-ET Glut-CA1-ProS Glut-CA1-ProS Glut_2","WMB-IT-ET Glut-CA1-ProS Glut-CA1-ProS Glut_3","WMB-IT-ET Glut-CA1-ProS Glut-CA1-ProS Glut_4","WMB-IT-ET Glut-CA1-ProS Glut-CA1-ProS Glut_5","WMB-IT-ET Glut-CA1-ProS Glut-CA1-ProS Glut_6","WMB-IT-ET Glut-CA3 Glut-CA3 Glut_1","WMB-IT-ET Glut-CA3 Glut-CA3 Glut_2","WMB-IT-ET Glut-CA3 Glut-CA3 Glut_3","WMB-IT-ET Glut-CA3 Glut-CA3 Glut_4","WMB-IT-ET Glut-CA3 Glut-CA3 Glut_5","WMB-IT-ET Glut-L2 IT PPP-APr Glut-L2 IT PPP-APr Glut_1","WMB-IT-ET Glut-L2 IT PPP-APr Glut-L2 IT PPP-APr Glut_2","WMB-IT-ET Glut-L2 IT PPP-APr Glut-L2 IT PPP-APr Glut_3","WMB-IT-ET Glut-L2 IT PPP-APr Glut-L2 IT PPP-APr Glut_4","WMB-IT-ET Glut-L2/3 IT PPP Glut-L2/3 IT PPP Glut_1","WMB-IT-ET Glut-L2/3 IT PPP Glut-L2/3 IT PPP Glut_2","WMB-IT-ET Glut-L2/3 IT PPP Glut-L2/3 IT PPP Glut_3","WMB-IT-ET Glut-L2/3 IT RSP Glut-L2/3 IT RSP Glut_1","WMB-IT-ET Glut-L2/3 IT RSP Glut-L2/3 IT RSP Glut_2","WMB-IT-ET Glut-L4 RSP-ACA Glut-L4 RSP-ACA Glut_1","WMB-IT-ET Glut-L5 ET CTX Glut-L5 ET CTX Glut_1","WMB-IT-ET Glut-L5 ET CTX Glut-L5 ET CTX Glut_2","WMB-IT-ET Glut-L5 ET CTX Glut-L5 ET CTX Glut_3","WMB-IT-ET Glut-L5 ET CTX Glut-L5 ET CTX Glut_4","WMB-IT-ET Glut-L5 ET CTX Glut-L5 ET CTX Glut_5","WMB-IT-ET Glut-L5 ET CTX Glut-L5 ET CTX Glut_6","WMB-IT-ET Glut-SUB-ProS Glut-SUB-ProS Glut_1","WMB-IT-ET Glut-SUB-ProS Glut-SUB-ProS Glut_2","WMB-IT-ET Glut-SUB-ProS Glut-SUB-ProS Glut_3","WMB-IT-ET Glut-L5 PPP Glut-L5 PPP Glut_1","WMB-IT-ET Glut-CA2-FC-IG Glut-CA2-FC-IG Glut_1","WMB-IT-ET Glut-CA2-FC-IG Glut-CA2-FC-IG Glut_2","WMB-IT-ET Glut-NLOT Rho Glut-NLOT Rho Glut_1","WMB-NP-CT-L6b Glut-L6b EPd Glut-L6b EPd Glut_1","WMB-NP-CT-L6b Glut-L6b EPd Glut-L6b EPd Glut_2","WMB-NP-CT-L6b Glut-L6b EPd Glut-L6b EPd Glut_3","WMB-NP-CT-L6b Glut-L6b/CT ENT Glut-L6b/CT ENT Glut_1","WMB-NP-CT-L6b Glut-L6b/CT ENT Glut-L6b/CT ENT Glut_2","WMB-NP-CT-L6b Glut-L6b/CT ENT Glut-L6b/CT ENT Glut_3","WMB-NP-CT-L6b Glut-L6b/CT ENT Glut-L6b/CT ENT Glut_4","WMB-NP-CT-L6b Glut-L6b CTX Glut-L6b CTX Glut_1","WMB-NP-CT-L6b Glut-L6b CTX Glut-L6b CTX Glut_2","WMB-NP-CT-L6b Glut-L6b CTX Glut-L6b CTX Glut_3","WMB-NP-CT-L6b Glut-L6b CTX Glut-L6b CTX Glut_4","WMB-NP-CT-L6b Glut-L6 CT CTX Glut-L6 CT CTX Glut_1","WMB-NP-CT-L6b Glut-L6 CT CTX Glut-L6 CT CTX Glut_2","WMB-NP-CT-L6b Glut-L6 CT CTX Glut-L6 CT CTX Glut_3","WMB-NP-CT-L6b Glut-L6 CT CTX Glut-L6 CT CTX Glut_4","WMB-NP-CT-L6b Glut-L6 CT CTX Glut-L6 CT CTX Glut_5","WMB-NP-CT-L6b Glut-L6 CT CTX Glut-L6 CT CTX Glut_6","WMB-NP-CT-L6b Glut-CT SUB Glut-CT SUB Glut_1","WMB-NP-CT-L6b Glut-CT SUB Glut-CT SUB Glut_2","WMB-NP-CT-L6b Glut-L5 NP CTX Glut-L5 NP CTX Glut_1","WMB-NP-CT-L6b Glut-L5 NP CTX Glut-L5 NP CTX Glut_2","WMB-NP-CT-L6b Glut-L5 NP CTX Glut-L5 NP CTX Glut_3","WMB-NP-CT-L6b Glut-L5 NP CTX Glut-L5 NP CTX Glut_4","WMB-NP-CT-L6b Glut-L5 NP CTX Glut-L5 NP CTX Glut_5","WMB-NP-CT-L6b Glut-NP SUB Glut-NP SUB Glut_1","WMB-NP-CT-L6b Glut-NP SUB Glut-NP SUB Glut_2","WMB-NP-CT-L6b Glut-NP PPP Glut-NP PPP Glut_1","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut-OB Eomes Ms4a15 Glut_1","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut-OB Eomes Ms4a15 Glut_2","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut-OB Eomes Ms4a15 Glut_3","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut-OB Eomes Ms4a15 Glut_4","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut-OB Eomes Ms4a15 Glut_5","WMB-OB-CR Glut-HPF CR Glut-HPF CR Glut_1","WMB-DG-IMN Glut-DG Glut-DG Glut_1","WMB-DG-IMN Glut-DG Glut-DG Glut_2","WMB-DG-IMN Glut-DG Glut-DG Glut_3","WMB-DG-IMN Glut-DG Glut-DG Glut_4","WMB-DG-IMN Glut-DG-PIR Ex IMN-DG-PIR Ex IMN_1","WMB-DG-IMN Glut-DG-PIR Ex IMN-DG-PIR Ex IMN_2","WMB-DG-IMN Glut-DG-PIR Ex IMN-DG-PIR Ex IMN_3","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba-OB Meis2 Thsd7b Gaba_1","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba-OB Meis2 Thsd7b Gaba_2","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba-OB Meis2 Thsd7b Gaba_3","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba-OB Meis2 Thsd7b Gaba_4","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba-OB Meis2 Thsd7b Gaba_5","WMB-OB-IMN GABA-OB Trdn Gaba-OB Trdn Gaba_1","WMB-OB-IMN GABA-OB Trdn Gaba-OB Trdn Gaba_2","WMB-OB-IMN GABA-OB-in Frmd7 Gaba-OB-in Frmd7 Gaba_1","WMB-OB-IMN GABA-OB-in Frmd7 Gaba-OB-in Frmd7 Gaba_2","WMB-OB-IMN GABA-OB-in Frmd7 Gaba-OB-in Frmd7 Gaba_3","WMB-OB-IMN GABA-OB-in Frmd7 Gaba-OB-in Frmd7 Gaba_4","WMB-OB-IMN GABA-OB-in Frmd7 Gaba-OB-in Frmd7 Gaba_5","WMB-OB-IMN GABA-OB-in Frmd7 Gaba-OB-in Frmd7 Gaba_6","WMB-OB-IMN GABA-OB-in Frmd7 Gaba-OB-in Frmd7 Gaba_7","WMB-OB-IMN GABA-OB-in Frmd7 Gaba-OB-in Frmd7 Gaba_8","WMB-OB-IMN GABA-OB-out Frmd7 Gaba-OB-out Frmd7 Gaba_1","WMB-OB-IMN GABA-OB-out Frmd7 Gaba-OB-out Frmd7 Gaba_2","WMB-OB-IMN GABA-OB-out Frmd7 Gaba-OB-out Frmd7 Gaba_3","WMB-OB-IMN GABA-OB-mi Frmd7 Gaba-OB-mi Frmd7 Gaba_1","WMB-OB-IMN GABA-OB Dopa-Gaba-OB Dopa-Gaba_1","WMB-OB-IMN GABA-OB Dopa-Gaba-OB Dopa-Gaba_2","WMB-OB-IMN GABA-OB Dopa-Gaba-OB Dopa-Gaba_3","WMB-OB-IMN GABA-OB Dopa-Gaba-OB Dopa-Gaba_4","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN-OB-STR-CTX Inh IMN_1","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN-OB-STR-CTX Inh IMN_2","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN-OB-STR-CTX Inh IMN_3","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN-OB-STR-CTX Inh IMN_4","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN-OB-STR-CTX Inh IMN_5","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN-OB-STR-CTX Inh IMN_6","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN-OB-STR-CTX Inh IMN_7","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_1","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_2","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_3","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_4","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_5","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_6","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_7","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_8","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_9","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_10","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_11","WMB-CTX-CGE GABA-Vip Gaba-Vip Gaba_12","WMB-CTX-CGE GABA-Sncg Gaba-Sncg Gaba_1","WMB-CTX-CGE GABA-Sncg Gaba-Sncg Gaba_2","WMB-CTX-CGE GABA-Sncg Gaba-Sncg Gaba_3","WMB-CTX-CGE GABA-Sncg Gaba-Sncg Gaba_4","WMB-CTX-CGE GABA-Sncg Gaba-Sncg Gaba_5","WMB-CTX-CGE GABA-Sncg Gaba-Sncg Gaba_6","WMB-CTX-CGE GABA-Sncg Gaba-Sncg Gaba_7","WMB-CTX-CGE GABA-Sncg Gaba-Sncg Gaba_8","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba-RHP-COA Ndnf Gaba_1","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba-RHP-COA Ndnf Gaba_2","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba-RHP-COA Ndnf Gaba_3","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba-RHP-COA Ndnf Gaba_4","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba-RHP-COA Ndnf Gaba_5","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba-RHP-COA Ndnf Gaba_6","WMB-CTX-CGE GABA-Lamp5 Gaba-Lamp5 Gaba_1","WMB-CTX-CGE GABA-Lamp5 Gaba-Lamp5 Gaba_2","WMB-CTX-CGE GABA-Lamp5 Gaba-Lamp5 Gaba_3","WMB-CTX-CGE GABA-Lamp5 Gaba-Lamp5 Gaba_4","WMB-CTX-MGE GABA-Lamp5 Lhx6 Gaba-Lamp5 Lhx6 Gaba_1","WMB-CTX-MGE GABA-Pvalb chandelier Gaba-Pvalb chandelier Gaba_1","WMB-CTX-MGE GABA-Pvalb Gaba-Pvalb Gaba_1","WMB-CTX-MGE GABA-Pvalb Gaba-Pvalb Gaba_2","WMB-CTX-MGE GABA-Pvalb Gaba-Pvalb Gaba_3","WMB-CTX-MGE GABA-Pvalb Gaba-Pvalb Gaba_4","WMB-CTX-MGE GABA-Pvalb Gaba-Pvalb Gaba_5","WMB-CTX-MGE GABA-Pvalb Gaba-Pvalb Gaba_6","WMB-CTX-MGE GABA-Pvalb Gaba-Pvalb Gaba_7","WMB-CTX-MGE GABA-Pvalb Gaba-Pvalb Gaba_8","WMB-CTX-MGE GABA-Pvalb Gaba-Pvalb Gaba_9","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_1","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_2","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_3","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_4","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_5","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_6","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_7","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_8","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_9","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_10","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_11","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_12","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_13","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_14","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_15","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_16","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_17","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_18","WMB-CTX-MGE GABA-Sst Gaba-Sst Gaba_19"],"labels":["WMB","IT-ET Glut","NP-CT-L6b Glut","OB-CR Glut","DG-IMN Glut","OB-IMN GABA","CTX-CGE GABA","CTX-MGE GABA","CLA-EPd-CTX Car3 Glut","IT EP-CLA Glut","L5/6 IT TPE-ENT Glut","L6 IT CTX Glut","L5 IT CTX Glut","L4/5 IT CTX Glut","L2/3 IT CTX Glut","L2/3 IT ENT Glut","L2/3 IT PIR-ENTl Glut","IT AON-TT-DP Glut","L2 IT ENT-po Glut","MEA Slc17a7 Glut","COAp Grxcr2 Glut","LA-BLA-BMA-PA Glut","ENTmv-PA-COAp Glut","CA1-ProS Glut","CA3 Glut","L2 IT PPP-APr Glut","L2/3 IT PPP Glut","L2/3 IT RSP Glut","L4 RSP-ACA Glut","L5 ET CTX Glut","SUB-ProS Glut","L5 PPP Glut","CA2-FC-IG Glut","NLOT Rho Glut","L6b EPd Glut","L6b/CT ENT Glut","L6b CTX Glut","L6 CT CTX Glut","CT SUB Glut","L5 NP CTX Glut","NP SUB Glut","NP PPP Glut","OB Eomes Ms4a15 Glut","HPF CR Glut","DG Glut","DG-PIR Ex IMN","OB Meis2 Thsd7b Gaba","OB Trdn Gaba","OB-in Frmd7 Gaba","OB-out Frmd7 Gaba","OB-mi Frmd7 Gaba","OB Dopa-Gaba","OB-STR-CTX Inh IMN","Vip Gaba","Sncg Gaba","RHP-COA Ndnf Gaba","Lamp5 Gaba","Lamp5 Lhx6 Gaba","Pvalb chandelier Gaba","Pvalb Gaba","Sst Gaba","CLA-EPd-CTX Car3 Glut_1","CLA-EPd-CTX Car3 Glut_2","IT EP-CLA Glut_1","IT EP-CLA Glut_2","IT EP-CLA Glut_3","IT EP-CLA Glut_4","L5/6 IT TPE-ENT Glut_1","L5/6 IT TPE-ENT Glut_2","L5/6 IT TPE-ENT Glut_3","L5/6 IT TPE-ENT Glut_4","L5/6 IT TPE-ENT Glut_5","L5/6 IT TPE-ENT Glut_6","L6 IT CTX Glut_1","L6 IT CTX Glut_2","L6 IT CTX Glut_3","L6 IT CTX Glut_4","L6 IT CTX Glut_5","L5 IT CTX Glut_1","L5 IT CTX Glut_2","L5 IT CTX Glut_3","L5 IT CTX Glut_4","L5 IT CTX Glut_5","L4/5 IT CTX Glut_1","L4/5 IT CTX Glut_2","L4/5 IT CTX Glut_3","L4/5 IT CTX Glut_4","L4/5 IT CTX Glut_5","L4/5 IT CTX Glut_6","L2/3 IT CTX Glut_1","L2/3 IT CTX Glut_2","L2/3 IT CTX Glut_3","L2/3 IT CTX Glut_4","L2/3 IT ENT Glut_1","L2/3 IT ENT Glut_2","L2/3 IT ENT Glut_3","L2/3 IT ENT Glut_4","L2/3 IT ENT Glut_5","L2/3 IT ENT Glut_6","L2/3 IT PIR-ENTl Glut_1","L2/3 IT PIR-ENTl Glut_2","L2/3 IT PIR-ENTl Glut_3","L2/3 IT PIR-ENTl Glut_4","L2/3 IT PIR-ENTl Glut_5","L2/3 IT PIR-ENTl Glut_6","L2/3 IT PIR-ENTl Glut_7","IT AON-TT-DP Glut_1","IT AON-TT-DP Glut_2","IT AON-TT-DP Glut_3","IT AON-TT-DP Glut_4","IT AON-TT-DP Glut_5","L2 IT ENT-po Glut_1","L2 IT ENT-po Glut_2","L2 IT ENT-po Glut_3","L2 IT ENT-po Glut_4","MEA Slc17a7 Glut_1","MEA Slc17a7 Glut_2","MEA Slc17a7 Glut_3","COAp Grxcr2 Glut_1","COAp Grxcr2 Glut_2","LA-BLA-BMA-PA Glut_1","LA-BLA-BMA-PA Glut_2","LA-BLA-BMA-PA Glut_3","LA-BLA-BMA-PA Glut_4","LA-BLA-BMA-PA Glut_5","LA-BLA-BMA-PA Glut_6","ENTmv-PA-COAp Glut_1","ENTmv-PA-COAp Glut_2","ENTmv-PA-COAp Glut_3","CA1-ProS Glut_1","CA1-ProS Glut_2","CA1-ProS Glut_3","CA1-ProS Glut_4","CA1-ProS Glut_5","CA1-ProS Glut_6","CA3 Glut_1","CA3 Glut_2","CA3 Glut_3","CA3 Glut_4","CA3 Glut_5","L2 IT PPP-APr Glut_1","L2 IT PPP-APr Glut_2","L2 IT PPP-APr Glut_3","L2 IT PPP-APr Glut_4","L2/3 IT PPP Glut_1","L2/3 IT PPP Glut_2","L2/3 IT PPP Glut_3","L2/3 IT RSP Glut_1","L2/3 IT RSP Glut_2","L4 RSP-ACA Glut_1","L5 ET CTX Glut_1","L5 ET CTX Glut_2","L5 ET CTX Glut_3","L5 ET CTX Glut_4","L5 ET CTX Glut_5","L5 ET CTX Glut_6","SUB-ProS Glut_1","SUB-ProS Glut_2","SUB-ProS Glut_3","L5 PPP Glut_1","CA2-FC-IG Glut_1","CA2-FC-IG Glut_2","NLOT Rho Glut_1","L6b EPd Glut_1","L6b EPd Glut_2","L6b EPd Glut_3","L6b/CT ENT Glut_1","L6b/CT ENT Glut_2","L6b/CT ENT Glut_3","L6b/CT ENT Glut_4","L6b CTX Glut_1","L6b CTX Glut_2","L6b CTX Glut_3","L6b CTX Glut_4","L6 CT CTX Glut_1","L6 CT CTX Glut_2","L6 CT CTX Glut_3","L6 CT CTX Glut_4","L6 CT CTX Glut_5","L6 CT CTX Glut_6","CT SUB Glut_1","CT SUB Glut_2","L5 NP CTX Glut_1","L5 NP CTX Glut_2","L5 NP CTX Glut_3","L5 NP CTX Glut_4","L5 NP CTX Glut_5","NP SUB Glut_1","NP SUB Glut_2","NP PPP Glut_1","OB Eomes Ms4a15 Glut_1","OB Eomes Ms4a15 Glut_2","OB Eomes Ms4a15 Glut_3","OB Eomes Ms4a15 Glut_4","OB Eomes Ms4a15 Glut_5","HPF CR Glut_1","DG Glut_1","DG Glut_2","DG Glut_3","DG Glut_4","DG-PIR Ex IMN_1","DG-PIR Ex IMN_2","DG-PIR Ex IMN_3","OB Meis2 Thsd7b Gaba_1","OB Meis2 Thsd7b Gaba_2","OB Meis2 Thsd7b Gaba_3","OB Meis2 Thsd7b Gaba_4","OB Meis2 Thsd7b Gaba_5","OB Trdn Gaba_1","OB Trdn Gaba_2","OB-in Frmd7 Gaba_1","OB-in Frmd7 Gaba_2","OB-in Frmd7 Gaba_3","OB-in Frmd7 Gaba_4","OB-in Frmd7 Gaba_5","OB-in Frmd7 Gaba_6","OB-in Frmd7 Gaba_7","OB-in Frmd7 Gaba_8","OB-out Frmd7 Gaba_1","OB-out Frmd7 Gaba_2","OB-out Frmd7 Gaba_3","OB-mi Frmd7 Gaba_1","OB Dopa-Gaba_1","OB Dopa-Gaba_2","OB Dopa-Gaba_3","OB Dopa-Gaba_4","OB-STR-CTX Inh IMN_1","OB-STR-CTX Inh IMN_2","OB-STR-CTX Inh IMN_3","OB-STR-CTX Inh IMN_4","OB-STR-CTX Inh IMN_5","OB-STR-CTX Inh IMN_6","OB-STR-CTX Inh IMN_7","Vip Gaba_1","Vip Gaba_2","Vip Gaba_3","Vip Gaba_4","Vip Gaba_5","Vip Gaba_6","Vip Gaba_7","Vip Gaba_8","Vip Gaba_9","Vip Gaba_10","Vip Gaba_11","Vip Gaba_12","Sncg Gaba_1","Sncg Gaba_2","Sncg Gaba_3","Sncg Gaba_4","Sncg Gaba_5","Sncg Gaba_6","Sncg Gaba_7","Sncg Gaba_8","RHP-COA Ndnf Gaba_1","RHP-COA Ndnf Gaba_2","RHP-COA Ndnf Gaba_3","RHP-COA Ndnf Gaba_4","RHP-COA Ndnf Gaba_5","RHP-COA Ndnf Gaba_6","Lamp5 Gaba_1","Lamp5 Gaba_2","Lamp5 Gaba_3","Lamp5 Gaba_4","Lamp5 Lhx6 Gaba_1","Pvalb chandelier Gaba_1","Pvalb Gaba_1","Pvalb Gaba_2","Pvalb Gaba_3","Pvalb Gaba_4","Pvalb Gaba_5","Pvalb Gaba_6","Pvalb Gaba_7","Pvalb Gaba_8","Pvalb Gaba_9","Sst Gaba_1","Sst Gaba_2","Sst Gaba_3","Sst Gaba_4","Sst Gaba_5","Sst Gaba_6","Sst Gaba_7","Sst Gaba_8","Sst Gaba_9","Sst Gaba_10","Sst Gaba_11","Sst Gaba_12","Sst Gaba_13","Sst Gaba_14","Sst Gaba_15","Sst Gaba_16","Sst Gaba_17","Sst Gaba_18","Sst Gaba_19"],"parents":["","WMB","WMB","WMB","WMB","WMB","WMB","WMB","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-IT-ET Glut","WMB-NP-CT-L6b Glut","WMB-NP-CT-L6b Glut","WMB-NP-CT-L6b Glut","WMB-NP-CT-L6b Glut","WMB-NP-CT-L6b Glut","WMB-NP-CT-L6b Glut","WMB-NP-CT-L6b Glut","WMB-NP-CT-L6b Glut","WMB-OB-CR Glut","WMB-OB-CR Glut","WMB-DG-IMN Glut","WMB-DG-IMN Glut","WMB-OB-IMN GABA","WMB-OB-IMN GABA","WMB-OB-IMN GABA","WMB-OB-IMN GABA","WMB-OB-IMN GABA","WMB-OB-IMN GABA","WMB-OB-IMN GABA","WMB-CTX-CGE GABA","WMB-CTX-CGE GABA","WMB-CTX-CGE GABA","WMB-CTX-CGE GABA","WMB-CTX-MGE GABA","WMB-CTX-MGE GABA","WMB-CTX-MGE GABA","WMB-CTX-MGE GABA","WMB-IT-ET Glut-CLA-EPd-CTX Car3 Glut","WMB-IT-ET Glut-CLA-EPd-CTX Car3 Glut","WMB-IT-ET Glut-IT EP-CLA Glut","WMB-IT-ET Glut-IT EP-CLA Glut","WMB-IT-ET Glut-IT EP-CLA Glut","WMB-IT-ET Glut-IT EP-CLA Glut","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut","WMB-IT-ET Glut-L5/6 IT TPE-ENT Glut","WMB-IT-ET Glut-L6 IT CTX Glut","WMB-IT-ET Glut-L6 IT CTX Glut","WMB-IT-ET Glut-L6 IT CTX Glut","WMB-IT-ET Glut-L6 IT CTX Glut","WMB-IT-ET Glut-L6 IT CTX Glut","WMB-IT-ET Glut-L5 IT CTX Glut","WMB-IT-ET Glut-L5 IT CTX Glut","WMB-IT-ET Glut-L5 IT CTX Glut","WMB-IT-ET Glut-L5 IT CTX Glut","WMB-IT-ET Glut-L5 IT CTX Glut","WMB-IT-ET Glut-L4/5 IT CTX Glut","WMB-IT-ET Glut-L4/5 IT CTX Glut","WMB-IT-ET Glut-L4/5 IT CTX Glut","WMB-IT-ET Glut-L4/5 IT CTX Glut","WMB-IT-ET Glut-L4/5 IT CTX Glut","WMB-IT-ET Glut-L4/5 IT CTX Glut","WMB-IT-ET Glut-L2/3 IT CTX Glut","WMB-IT-ET Glut-L2/3 IT CTX Glut","WMB-IT-ET Glut-L2/3 IT CTX Glut","WMB-IT-ET Glut-L2/3 IT CTX Glut","WMB-IT-ET Glut-L2/3 IT ENT Glut","WMB-IT-ET Glut-L2/3 IT ENT Glut","WMB-IT-ET Glut-L2/3 IT ENT Glut","WMB-IT-ET Glut-L2/3 IT ENT Glut","WMB-IT-ET Glut-L2/3 IT ENT Glut","WMB-IT-ET Glut-L2/3 IT ENT Glut","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut","WMB-IT-ET Glut-L2/3 IT PIR-ENTl Glut","WMB-IT-ET Glut-IT AON-TT-DP Glut","WMB-IT-ET Glut-IT AON-TT-DP Glut","WMB-IT-ET Glut-IT AON-TT-DP Glut","WMB-IT-ET Glut-IT AON-TT-DP Glut","WMB-IT-ET Glut-IT AON-TT-DP Glut","WMB-IT-ET Glut-L2 IT ENT-po Glut","WMB-IT-ET Glut-L2 IT ENT-po Glut","WMB-IT-ET Glut-L2 IT ENT-po Glut","WMB-IT-ET Glut-L2 IT ENT-po Glut","WMB-IT-ET Glut-MEA Slc17a7 Glut","WMB-IT-ET Glut-MEA Slc17a7 Glut","WMB-IT-ET Glut-MEA Slc17a7 Glut","WMB-IT-ET Glut-COAp Grxcr2 Glut","WMB-IT-ET Glut-COAp Grxcr2 Glut","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut","WMB-IT-ET Glut-LA-BLA-BMA-PA Glut","WMB-IT-ET Glut-ENTmv-PA-COAp Glut","WMB-IT-ET Glut-ENTmv-PA-COAp Glut","WMB-IT-ET Glut-ENTmv-PA-COAp Glut","WMB-IT-ET Glut-CA1-ProS Glut","WMB-IT-ET Glut-CA1-ProS Glut","WMB-IT-ET Glut-CA1-ProS Glut","WMB-IT-ET Glut-CA1-ProS Glut","WMB-IT-ET Glut-CA1-ProS Glut","WMB-IT-ET Glut-CA1-ProS Glut","WMB-IT-ET Glut-CA3 Glut","WMB-IT-ET Glut-CA3 Glut","WMB-IT-ET Glut-CA3 Glut","WMB-IT-ET Glut-CA3 Glut","WMB-IT-ET Glut-CA3 Glut","WMB-IT-ET Glut-L2 IT PPP-APr Glut","WMB-IT-ET Glut-L2 IT PPP-APr Glut","WMB-IT-ET Glut-L2 IT PPP-APr Glut","WMB-IT-ET Glut-L2 IT PPP-APr Glut","WMB-IT-ET Glut-L2/3 IT PPP Glut","WMB-IT-ET Glut-L2/3 IT PPP Glut","WMB-IT-ET Glut-L2/3 IT PPP Glut","WMB-IT-ET Glut-L2/3 IT RSP Glut","WMB-IT-ET Glut-L2/3 IT RSP Glut","WMB-IT-ET Glut-L4 RSP-ACA Glut","WMB-IT-ET Glut-L5 ET CTX Glut","WMB-IT-ET Glut-L5 ET CTX Glut","WMB-IT-ET Glut-L5 ET CTX Glut","WMB-IT-ET Glut-L5 ET CTX Glut","WMB-IT-ET Glut-L5 ET CTX Glut","WMB-IT-ET Glut-L5 ET CTX Glut","WMB-IT-ET Glut-SUB-ProS Glut","WMB-IT-ET Glut-SUB-ProS Glut","WMB-IT-ET Glut-SUB-ProS Glut","WMB-IT-ET Glut-L5 PPP Glut","WMB-IT-ET Glut-CA2-FC-IG Glut","WMB-IT-ET Glut-CA2-FC-IG Glut","WMB-IT-ET Glut-NLOT Rho Glut","WMB-NP-CT-L6b Glut-L6b EPd Glut","WMB-NP-CT-L6b Glut-L6b EPd Glut","WMB-NP-CT-L6b Glut-L6b EPd Glut","WMB-NP-CT-L6b Glut-L6b/CT ENT Glut","WMB-NP-CT-L6b Glut-L6b/CT ENT Glut","WMB-NP-CT-L6b Glut-L6b/CT ENT Glut","WMB-NP-CT-L6b Glut-L6b/CT ENT Glut","WMB-NP-CT-L6b Glut-L6b CTX Glut","WMB-NP-CT-L6b Glut-L6b CTX Glut","WMB-NP-CT-L6b Glut-L6b CTX Glut","WMB-NP-CT-L6b Glut-L6b CTX Glut","WMB-NP-CT-L6b Glut-L6 CT CTX Glut","WMB-NP-CT-L6b Glut-L6 CT CTX Glut","WMB-NP-CT-L6b Glut-L6 CT CTX Glut","WMB-NP-CT-L6b Glut-L6 CT CTX Glut","WMB-NP-CT-L6b Glut-L6 CT CTX Glut","WMB-NP-CT-L6b Glut-L6 CT CTX Glut","WMB-NP-CT-L6b Glut-CT SUB Glut","WMB-NP-CT-L6b Glut-CT SUB Glut","WMB-NP-CT-L6b Glut-L5 NP CTX Glut","WMB-NP-CT-L6b Glut-L5 NP CTX Glut","WMB-NP-CT-L6b Glut-L5 NP CTX Glut","WMB-NP-CT-L6b Glut-L5 NP CTX Glut","WMB-NP-CT-L6b Glut-L5 NP CTX Glut","WMB-NP-CT-L6b Glut-NP SUB Glut","WMB-NP-CT-L6b Glut-NP SUB Glut","WMB-NP-CT-L6b Glut-NP PPP Glut","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut","WMB-OB-CR Glut-OB Eomes Ms4a15 Glut","WMB-OB-CR Glut-HPF CR Glut","WMB-DG-IMN Glut-DG Glut","WMB-DG-IMN Glut-DG Glut","WMB-DG-IMN Glut-DG Glut","WMB-DG-IMN Glut-DG Glut","WMB-DG-IMN Glut-DG-PIR Ex IMN","WMB-DG-IMN Glut-DG-PIR Ex IMN","WMB-DG-IMN Glut-DG-PIR Ex IMN","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba","WMB-OB-IMN GABA-OB Meis2 Thsd7b Gaba","WMB-OB-IMN GABA-OB Trdn Gaba","WMB-OB-IMN GABA-OB Trdn Gaba","WMB-OB-IMN GABA-OB-in Frmd7 Gaba","WMB-OB-IMN GABA-OB-in Frmd7 Gaba","WMB-OB-IMN GABA-OB-in Frmd7 Gaba","WMB-OB-IMN GABA-OB-in Frmd7 Gaba","WMB-OB-IMN GABA-OB-in Frmd7 Gaba","WMB-OB-IMN GABA-OB-in Frmd7 Gaba","WMB-OB-IMN GABA-OB-in Frmd7 Gaba","WMB-OB-IMN GABA-OB-in Frmd7 Gaba","WMB-OB-IMN GABA-OB-out Frmd7 Gaba","WMB-OB-IMN GABA-OB-out Frmd7 Gaba","WMB-OB-IMN GABA-OB-out Frmd7 Gaba","WMB-OB-IMN GABA-OB-mi Frmd7 Gaba","WMB-OB-IMN GABA-OB Dopa-Gaba","WMB-OB-IMN GABA-OB Dopa-Gaba","WMB-OB-IMN GABA-OB Dopa-Gaba","WMB-OB-IMN GABA-OB Dopa-Gaba","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN","WMB-OB-IMN GABA-OB-STR-CTX Inh IMN","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Vip Gaba","WMB-CTX-CGE GABA-Sncg Gaba","WMB-CTX-CGE GABA-Sncg Gaba","WMB-CTX-CGE GABA-Sncg Gaba","WMB-CTX-CGE GABA-Sncg Gaba","WMB-CTX-CGE GABA-Sncg Gaba","WMB-CTX-CGE GABA-Sncg Gaba","WMB-CTX-CGE GABA-Sncg Gaba","WMB-CTX-CGE GABA-Sncg Gaba","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba","WMB-CTX-CGE GABA-RHP-COA Ndnf Gaba","WMB-CTX-CGE GABA-Lamp5 Gaba","WMB-CTX-CGE GABA-Lamp5 Gaba","WMB-CTX-CGE GABA-Lamp5 Gaba","WMB-CTX-CGE GABA-Lamp5 Gaba","WMB-CTX-MGE GABA-Lamp5 Lhx6 Gaba","WMB-CTX-MGE GABA-Pvalb chandelier Gaba","WMB-CTX-MGE GABA-Pvalb Gaba","WMB-CTX-MGE GABA-Pvalb Gaba","WMB-CTX-MGE GABA-Pvalb Gaba","WMB-CTX-MGE GABA-Pvalb Gaba","WMB-CTX-MGE GABA-Pvalb Gaba","WMB-CTX-MGE GABA-Pvalb Gaba","WMB-CTX-MGE GABA-Pvalb Gaba","WMB-CTX-MGE GABA-Pvalb Gaba","WMB-CTX-MGE GABA-Pvalb Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba","WMB-CTX-MGE GABA-Sst Gaba"],"values":[1863420,1095484,310198,4767,84352,107502,139032,122085,30090,24813,11854,108913,66624,369221,172213,21111,61035,32454,3704,10120,13481,20485,3434,31474,5229,5176,28457,33940,6615,24721,6844,1428,640,1408,4060,26788,20098,201912,7816,43739,2756,3029,1651,3116,82343,2009,2163,3507,79816,5997,611,4662,10746,62447,18840,3261,54484,8913,3470,42314,67388,29034,1056,19918,3433,798,664,2080,4663,2902,1791,225,193,18901,48729,14953,18607,7723,14583,20805,21099,7677,2460,85830,80792,11736,23147,76805,90911,11019,128897,14297,18000,1299,866,2527,11921,3557,941,12443,19494,7304,16330,417,1133,3914,4528,6979,3190,1557,16200,350,992,495,1867,2715,3657,3748,1147,12334,3385,6385,5187,2700,1803,1025,1528,943,963,19061,4609,1492,3493,898,1921,763,962,1039,2147,318,784,2426,1226,740,2345,20603,5509,7924,26016,6615,4582,5363,6268,2426,3895,2187,3490,2251,1103,1428,143,497,1408,429,1875,1756,8083,2247,1289,15169,10264,5499,3637,698,76047,68930,14692,4562,35459,2222,5449,2367,2034,24479,13915,2521,790,311,2445,3029,259,678,294,156,264,3116,1263,74950,964,5166,93,1200,716,597,512,193,678,183,996,2511,38299,34048,2063,1876,2172,216,739,403,5366,435,196,611,4296,157,71,138,1628,3459,774,4384,448,21,32,6998,5710,7526,6083,14713,8474,1083,1511,1441,140,3730,5038,2256,2349,7737,1900,1065,1928,429,1176,1365,336,695,167,426,272,41362,7040,3949,2133,8913,3470,2546,650,18939,6693,3190,1711,567,7777,241,6875,1183,2004,14335,3999,725,3740,4145,3432,6141,2677,2126,4064,2464,2893,4322,956,644,663],"type":"sunburst","sort":false,"marker":{"color":"rgba(31,119,180,1)","colors":["white","#FA0087","#61e2a4","#D00000","#16f2f2","#1b4332","#CCFF33","#f954ee","#64c2fc","#1F665D","#C400FF","#C0FF4D","#660F38","#3DCCB7","#E9530F","#1F46CC","#940099","#FF004B","#00FFC4","#456C99","#61CC5C","#BBFF73","#B6CC7A","#0F3466","#C973FF","#0F6632","#925C99","#999145","#FFF226","#99A2FF","#FF9999","#6B995C","#FF7391","#FFD573","#CC827A","#CC0098","#9EFF99","#34661F","#440066","#7B7ACC","#99CAFF","#B8FF26","#7F1FCC","#919900","#CC2400","#3D53CC","#FF99F7","#684599","#FF0073","#CC6D3D","#FF99A7","#96CC7A","#819945","#663D47","#FFE999","#0003FF","#FF764D","#26FF3E","#2F992E","#661F3B","#99F2FF","#99822E","#170F66","#994563","#1F4666","#694599","#5CAACC","#2E3966","#00B2CC","#172C99","#990073","#99172F","#3B2E66","#952E99","#2E5266","#661799","#991759","#6A992E","#8D9917","#456199","#66530F","#FFFE99","#651F66","#3B9900","#4DFFA3","#991768","#0F6619","#639917","#009909","#998817","#CC7A8F","#5C6899","#5C9972","#990030","#5C998D","#73F7FF","#FF4DAE","#FF99F9","#179921","#00FF39","#995C77","#66001D","#280066","#1FCC9A","#B87ACC","#5C8A99","#8626FF","#3D6652","#C773FF","#666400","#1F3E66","#5A2E99","#992E57","#5CCCBD","#CC5CA0","#A099FF","#5CCCC9","#7E5C99","#82995C","#330F66","#99FFE5","#99174B","#992E6E","#633D66","#660F43","#CC867A","#99735C","#CC6A3D","#95CC7A","#8800CC","#4D9945","#993E00","#2E4999","#FF00CE","#2A0F66","#997645","#00FFC5","#6ACC00","#991776","#712E99","#433D66","#002BCC","#266DFF","#3D65CC","#CC4D00","#FF007A","#635C99","#2E7899","#FFAE00","#998D2E","#5A0099","#FF2200","#5CCCB1","#99522E","#B34DFF","#66400F","#602E66","#5C60CC","#2F2E66","#CC1F30","#662E99","#661F20","#7D5CCC","#82CC5C","#994547","#81CC3D","#66643D","#699945","#B4CC5C","#5C9965","#5C9979","#66533D","#5C9986","#00FFE1","#CC3D77","#3DCC96","#49660F","#3E662E","#00FFFD","#1F52CC","#662D0F","#FF9999","#26FF73","#935C99","#662E53","#54661F","#FF73DB","#006614","#CC9A5C","#574599","#FF737E","#51663D","#00993B","#7ACCA8","#AECC1F","#662E59","#009BCC","#F573FF","#FF7726","#992E41","#389917","#CC7A3D","#643DCC","#9F00CC","#0005FF","#3DCC86","#664A3D","#459990","#992E33","#3D4966","#A6FF99","#00664C","#D5FF73","#80FF26","#BD1FCC","#995C71","#FFBF26","#990001","#4A0066","#4DFF68","#662000","#715CCC","#CC5C5C","#994F00","#2cb26d","#CC7800","#2d42b7","#990062","#52CC3D","#2E3199","#CC3E1F","#99462E","#FF0500","#2E6C99","#10660F","#17994C","#715C99","#7200CC","#7A96CC","#CC5CC5","#CC815C","#CC3D87","#66372E","#5C85CC","#F5FF99","#0F6622","#785C99","#FF2671","#52992E","#000B99","#178299","#91CC3D","#654DFF","#5CCC7F","#C0CC5C","#00CC76","#2E5866","#9BCC5C","#CC771F","#DC00FF","#422E99","#263DFF","#C0CC3D","#FF584D","#261F66","#455899","#66240F","#991793","#542E66","#D899FF","#992E91","#3D55CC","#662100","#99FFAD","#2E6662","#E5FF73","#AE5CCC","#EF99FF","#B0FF26","#8800FF","#5C00CC","#990084","#662E47","#A25CCC","#00661F","#997100","#661A0F","#7D2E99","#CC3D68","#5C91CC","#516600","#FF000A","#73FFC9"],"line":{"color":"rgba(255,255,255,1)"}},"domain":{"column":1},"branchvalues":"total","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiU3VuYnVyc3QgaGllcmFyY2h5IgpvdXRwdXQ6CiAgaHRtbF9kb2N1bWVudDoKICAgIHRvYzogdHJ1ZQogICAgdG9jX2Zsb2F0OiB0cnVlCiAgICBjb2RlX2Rvd25sb2FkOiB0cnVlCiAgICBjb2RlX2ZvbGRpbmc6IGhpZGUKZGF0ZTogIjIwMjQtMDItMDYiCi0tLQoKXApcCgojIyBQbG90dGluZyBhIHN1bmJ1cnN0IGRpYWdyYW0KClwKClRoaXMgc2NyaXB0IGNhbiBiZSB1c2VkIHRvIHBsb3QgYSBzdW5idXJzdCBkaWFncmFtIHRvIHJlcHJlc2VudCBhIGhpZXJhcmNoeS4KVGhlIGlucHV0IGNhbiBiZSBhIGRhdGEgZnJhbWUgd2l0aCByb3dzIHJlcHJlc2VudGluZyB0aGUgbGVhZi1sZXZlbCBhbmQgY29sdW1ucyByZXByZXNlbnQgYW5ub3RhdGlvbnMuIFRoaXMgZGF0YSBmcmFtZSBuZWVkcyB0byBiZSByZXN0cnVjdHVyZWQgdG8gYSBwYXJlbnQtY2hpbGQgKGhpZXJhcmNoaWNhbCBuZXR3b3JrIGRhdGEgZnJhbWUpLCB3aGljaCBpcyB3aGF0IHRoZSAnYXMuaGllckRGJyBkb2VzLiAKCmBgYHtyIGtsaXBweSwgZWNobz1GQUxTRSwgaW5jbHVkZT1UUlVFfQprbGlwcHk6OmtsaXBweSgpCmBgYAoKYGBge3Igc2V0dXAsIGluY2x1ZGU9RkFMU0V9IAprbml0cjo6b3B0c19jaHVuayRzZXQod2FybmluZyA9IEZBTFNFLCBtZXNzYWdlID0gRkFMU0UpIApgYGAKCmBgYHtyIGxvYWRpbmcgbGlicywgZWNobz1UfQoKcmVxdWlyZShkcGx5cikKcmVxdWlyZShwbG90bHkpCgpgYGAKCkxldCdzIHN0YXJ0IGJ5IGxvYWRpbmcgc29tZSBkdW1teSBoaWVyYXJjaGljYWwgZGF0YS4KCmBgYHtyLCBlY2hvPVQsIGV2YWw9VH0KVVJMID0gJ2h0dHBzOi8vYWxsZW4tYnJhaW4tY2VsbC1hdGxhcy5zMy11cy13ZXN0LTIuYW1hem9uYXdzLmNvbS9tZXRhZGF0YS9XTUItdGF4b25vbXkvMjAyMzEyMTUvY2wuZGZfQ0NOMjAyMzA3MjIwLnhsc3gnCmRhdGEgPSByaW86OmltcG9ydF9saXN0KFVSTCkKCmNvbG9ycyA8LSByaW86OmltcG9ydCgiaHR0cHM6Ly9hbGxlbi1icmFpbi1jZWxsLWF0bGFzLnMzLXVzLXdlc3QtMi5hbWF6b25hd3MuY29tL21ldGFkYXRhL1dNQi10YXhvbm9teS8yMDIzMTIxNS92aWV3cy9jbHVzdGVyX3RvX2NsdXN0ZXJfYW5ub3RhdGlvbl9tZW1iZXJzaGlwX2NvbG9yLmNzdiIpCmBgYAoKYGBge3IsIGVjaG89VCwgZXZhbD1UfQoKY2wuZGYgPC0gZGF0YSRjbHVzdGVyX2Fubm90YXRpb24KY2wuZGYgPC0gY2wuZGZbY2wuZGYkY2xhc3NfbGFiZWwgIT0gIkxRIixdCgpjbC5kZiA8LSBjbC5kZiAlPiUgbXV0YXRlKGNsdXN0ZXJfc2l6ZSA9IGMobXVsdGlvbWUuc2l6ZSArIHYyLnNpemUgKyB2My5zaXplKSkKCiMgYWRkIGNvbG9ycyB0byBjbHVzdGVyIGRhdGEgZnJhbWUKY29sb3JzJGNsdXN0ZXJfYWxpYXMgPC0gYXMuY2hhcmFjdGVyKGFzLmludGVnZXIoY29sb3JzJGNsdXN0ZXJfYWxpYXMpKQpjbC5kZiA8LSBjbC5kZiAlPiUgbGVmdF9qb2luKGNvbG9ycywgYnk9YygiY2wiPSJjbHVzdGVyX2FsaWFzIikpCgpzZWxlY3QuY29sdW1ucyA8LSBjb2xuYW1lcyhjbC5kZilbZ3JlcCgiXnN1cGVydHlwZSIsIGNvbG5hbWVzKGNsLmRmKSldCnN0LmRmIDwtIGNsLmRmICU+JSBncm91cF9ieV9hdChzZWxlY3QuY29sdW1ucykgJT4lIHN1bW1hcmlzZShuPW4oKSkKCnNlbGVjdC5jb2x1bW5zIDwtIGNvbG5hbWVzKGNsLmRmKVtncmVwKCJec3ViY2xhc3MiLCBjb2xuYW1lcyhjbC5kZikpXQpzYy5kZiA8LSBjbC5kZiAlPiUgZ3JvdXBfYnlfYXQoc2VsZWN0LmNvbHVtbnMpICU+JSBzdW1tYXJpc2Uobj1uKCkpCgpzZWxlY3QuY29sdW1ucyA8LSBjb2xuYW1lcyhjbC5kZilbZ3JlcCgiXmNsYXNzIiwgY29sbmFtZXMoY2wuZGYpKV0KYy5kZiA8LSBjbC5kZiAlPiUgZ3JvdXBfYnlfYXQoc2VsZWN0LmNvbHVtbnMpICU+JSBzdW1tYXJpc2Uobj1uKCkpCgpgYGAKCkEgaGllcmFyY2hpYyBzdHJ1Y3R1cmUgaXMgYmFzaWNhbGx5IGEgc2V0IG9mIG5vZGVzLCB3aXRoIGVkZ2VzIGxpbmtpbmcgbm9kZXMuIExldCdzIGNyZWF0ZSBhbiBlZGdlIGxpc3QgZm9yIHBsb3R0aW5nIHVzaW5nIHRoZSA8aWdyYXBoPiBwYWNrYWdlLldlJ2xsIGRvIHRoaXMgZm9yIGEgc3Vic2V0IG9mIHRoZSBkYXRhLgoKYGBge3IsIGVjaG89VCwgZXZhbD1UfQpkZXZ0b29sczo6c291cmNlX2dpc3QoImh0dHBzOi8vZ2lzdC5naXRodWIuY29tL2N2YW52ZWx0L2VmMjllMTU4MWIzMGI5NzU4ZWMxYmJhMWI4MzIyNjE5IikKYGBgCgoKCmBgYHtyIGNyZWF0ZSBzdW5idXJzdC5kZiwgZmlnLndpZHRoPTEyLCBmaWcuaGVpZ2h0PTQsIGVjaG89VH0KY2wuZGYgPC0gY2wuZGZbY2wuZGYkY2xhc3NfaWQgJWluJSBjKDE6NyksXQpzdW5idXJzdERGIDwtIGFzLnN1bmJ1cnN0REYoY2wuZGYsIAogICAgICAgICAgICAgICAgICAgICAgICAgICBsZXZlbHM9YygiY2xhc3MiLCJzdWJjbGFzcyIsInN1cGVydHlwZSIpLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgdmFsdWVDb2wgPSAiY2x1c3Rlcl9zaXplIiwgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICByb290bmFtZT0iV01CIikKYGBgCgpgYGB7ciBjcmVhdGUgcGxvdCwgZmlnLndpZHRoPTExLCBmaWcuaGVpZ2h0PTIsIGV2YWw9VCwgZWNobz1UfQpwIDwtIHBsb3RfbHkoKSAlPiUKICAgICAgYWRkX3RyYWNlKGlkcyA9IHN1bmJ1cnN0REYkaWRzLAogICAgICAgICAgICAgICAgbGFiZWxzID0gc3VuYnVyc3RERiRsYWJlbHMsCiAgICAgICAgICAgICAgICBwYXJlbnRzID1zdW5idXJzdERGJHBhcmVudCwKICAgICAgICAgICAgICAgIHZhbHVlcyA9IHN1bmJ1cnN0REYkdmFsdWVzLAogICAgICAgICAgICAgICAgdHlwZSA9ICdzdW5idXJzdCcsCiAgICAgICAgICAgICAgICBzb3J0PUZBTFNFLAogICAgICAgICAgICAgICAgbWFya2VyID0gbGlzdChjb2xvcnMgPSBzdW5idXJzdERGJGNvbG9yKSwKICAgICAgICAgICAgICAgIGRvbWFpbiA9IGxpc3QoY29sdW1uID0gMSksCiAgICAgICAgICAgICAgICBicmFuY2h2YWx1ZXMgPSAndG90YWwnCiAgICAgICAgICAgICAgICApJT4lCiAgICAgIGxheW91dChncmlkID0gbGlzdChjb2x1bW5zID0xLCByb3dzID0gMSksCiAgICAgICAgICAgICAgbWFyZ2luID0gbGlzdChsID0gMCwgciA9IDAsIGIgPSAwLCB0ID0gMCkKICAgICAgKQoKCgpgYGAKCmBgYHtyIHBsb3QgdHJlZSwgZmlnLndpZHRoPTYsIGZpZy5oZWlnaHQ9NixlY2hvPVR9CnAKYGBgCgoK</div>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("Sunburst.Rmd");
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
