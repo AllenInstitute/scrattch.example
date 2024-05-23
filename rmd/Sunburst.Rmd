@@ -1,0 +1,108 @@
+---
+title: "Sunburst hierarchy"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    code_download: true
+    code_folding: hide
+date: "2024-02-06"
+---
+
+\
+\
+
+## Plotting a sunburst diagram
+
+\
+
+This script can be used to plot a sunburst diagram to represent a hierarchy.
+The input can be a data frame with rows representing the leaf-level and columns represent annotations. This data frame needs to be restructured to a parent-child (hierarchical network data frame), which is what the 'as.hierDF' does. 
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy()
+```
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+```{r loading libs, echo=T}
+
+require(dplyr)
+require(plotly)
+
+```
+
+Let's start by loading some dummy hierarchical data.
+
+```{r, echo=T, eval=T}
+URL = 'https://allen-brain-cell-atlas.s3-us-west-2.amazonaws.com/metadata/WMB-taxonomy/20231215/cl.df_CCN202307220.xlsx'
+data = rio::import_list(URL)
+
+colors <- rio::import("https://allen-brain-cell-atlas.s3-us-west-2.amazonaws.com/metadata/WMB-taxonomy/20231215/views/cluster_to_cluster_annotation_membership_color.csv")
+```
+
+```{r, echo=T, eval=T}
+
+cl.df <- data$cluster_annotation
+cl.df <- cl.df[cl.df$class_label != "LQ",]
+
+cl.df <- cl.df %>% mutate(cluster_size = c(multiome.size + v2.size + v3.size))
+
+# add colors to cluster data frame
+colors$cluster_alias <- as.character(as.integer(colors$cluster_alias))
+cl.df <- cl.df %>% left_join(colors, by=c("cl"="cluster_alias"))
+
+select.columns <- colnames(cl.df)[grep("^supertype", colnames(cl.df))]
+st.df <- cl.df %>% group_by_at(select.columns) %>% summarise(n=n())
+
+select.columns <- colnames(cl.df)[grep("^subclass", colnames(cl.df))]
+sc.df <- cl.df %>% group_by_at(select.columns) %>% summarise(n=n())
+
+select.columns <- colnames(cl.df)[grep("^class", colnames(cl.df))]
+c.df <- cl.df %>% group_by_at(select.columns) %>% summarise(n=n())
+
+```
+
+A hierarchic structure is basically a set of nodes, with edges linking nodes. Let's create an edge list for plotting using the <igraph> package.We'll do this for a subset of the data.
+
+```{r, echo=T, eval=T}
+devtools::source_gist("https://gist.github.com/cvanvelt/ef29e1581b30b9758ec1bba1b8322619")
+```
+
+
+
+```{r create sunburst.df, fig.width=12, fig.height=4, echo=T}
+cl.df <- cl.df[cl.df$class_id %in% c(1:7),]
+sunburstDF <- as.sunburstDF(cl.df, 
+                           levels=c("class","subclass","supertype"),
+                            valueCol = "cluster_size", 
+                            rootname="WMB")
+```
+
+```{r create plot, fig.width=11, fig.height=2, eval=T, echo=T}
+p <- plot_ly() %>%
+      add_trace(ids = sunburstDF$ids,
+                labels = sunburstDF$labels,
+                parents =sunburstDF$parent,
+                values = sunburstDF$values,
+                type = 'sunburst',
+                sort=FALSE,
+                marker = list(colors = sunburstDF$color),
+                domain = list(column = 1),
+                branchvalues = 'total'
+                )%>%
+      layout(grid = list(columns =1, rows = 1),
+              margin = list(l = 0, r = 0, b = 0, t = 0)
+      )
+
+
+
+```
+
+```{r plot tree, fig.width=6, fig.height=6,echo=T}
+p
+```
+
+

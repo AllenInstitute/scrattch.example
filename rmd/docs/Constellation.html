@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2024-02-06" />
+
+<title>Constellation plot</title>
+
+<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/clipboard-1.7.1/clipboard.min.js"></script>
+<link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
+<link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
+<script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">scrattch.example</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Plot examples
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="Constellation.html">Constellation</a>
+    </li>
+    <li>
+      <a href="HierTree.html">HierTree</a>
+    </li>
+    <li>
+      <a href="Sunburst.html">Sunburst</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+<li role="separator" class="divider"></li>
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Constellation plot</h1>
+<h4 class="date">2024-02-06</h4>
+
+</div>
+
+
+<div id="creating-a-constellation-plot" class="section level2">
+<h2>Creating a constellation plot</h2>
+<p>This notebook can be used to create a constellation plot.</p>
+<p>For the purpose of this notebook, we will use the data from GABAergic
+CGE-derived neurons in cortex. This data is a subset of the data from
+the <a
+href="https://alleninstitute.github.io/abc_atlas_access/intro.html">Allen
+Brain Cell Atlas</a>.</p>
+<p>This notebook will first construct the knn matrix by running the
+<code>get_knn_graph()</code> function which serves as part of the input
+for the <code>plot_constellation()</code> function. More information
+about the functions and their input requirements can be found <a
+href="#id_0">here</a>.</p>
+<script>
+  addClassKlippyTo("pre.r, pre.markdown");
+  addKlippy('left', 'top', 'auto', '1', 'Copy code', 'Copied!');
+</script>
+<pre class="r"><code>library(ggplot2)
+library(purrr)
+library(scrattch.vis)
+library(scrattch.hicat)
+library(Matrix)
+library(dplyr)
+library(tidyr)
+library(parallel)
+library(bigstatsr)
+library(scrattch.bigcat)
+library(data.table)
+library(arrow)
+library(BiocNeighbors)</code></pre>
+<pre class="r"><code>URL = &#39;https://allen-brain-cell-atlas.s3-us-west-2.amazonaws.com/metadata/WMB-taxonomy/20231215/cl.df_CCN202307220.xlsx&#39;
+data = rio::import_list(URL)
+
+colors &lt;- rio::import(&quot;https://allen-brain-cell-atlas.s3-us-west-2.amazonaws.com/metadata/WMB-taxonomy/20231215/views/cluster_to_cluster_annotation_membership_color.csv&quot;)
+
+URL = &quot;https://allen-brain-cell-atlas.s3-us-west-2.amazonaws.com/metadata/WMB-10X/20231215/cell_metadata.csv&quot;
+anno.df = rio::import(URL)</code></pre>
+<pre class="r"><code>cl.df &lt;- data$cluster_annotation
+cl.df &lt;- cl.df[cl.df$class_label != &quot;LQ&quot;,]
+
+# add colors to cluster data frame
+colors$cluster_alias &lt;- as.character(as.integer(colors$cluster_alias))
+cl.df &lt;- cl.df %&gt;% left_join(colors, by=c(&quot;cl&quot;=&quot;cluster_alias&quot;))
+
+select.columns &lt;- colnames(cl.df)[grep(&quot;^supertype&quot;, colnames(cl.df))]
+st.df &lt;- cl.df %&gt;% group_by_at(select.columns) %&gt;% summarise(n=n())
+
+select.columns &lt;- colnames(cl.df)[grep(&quot;^subclass&quot;, colnames(cl.df))]
+sc.df &lt;- cl.df %&gt;% group_by_at(select.columns) %&gt;% summarise(n=n())
+
+select.columns &lt;- colnames(cl.df)[grep(&quot;^class&quot;, colnames(cl.df))]
+c.df &lt;- cl.df %&gt;% group_by_at(select.columns) %&gt;% summarise(n=n())</code></pre>
+<pre class="r"><code>cl.df &lt;- cl.df %&gt;% filter(class_id == 6)
+cl.df$cl &lt;- as.integer(as.character(cl.df$cl))
+
+anno.df &lt;- anno.df %&gt;% 
+  filter(cluster_alias %in% cl.df$cl) %&gt;% 
+  # filter(library_method == &quot;10Xv3&quot;) %&gt;%
+  left_join(cl.df[,c(1:12)], by=c(&quot;cluster_alias&quot;=&quot;cl&quot;)) 
+rownames(anno.df) &lt;- anno.df$cell_label</code></pre>
+<p>One of the inputs required to generate the KNN graph is a reduced
+dimension matrix. For the purpose of this notebook a pre-made matrix is
+downloaded</p>
+<pre class="r"><code>URL &lt;- &quot;https://allen-share.s3.us-east-2.amazonaws.com/scrattch.example/CTX-CGE_GABA.rd.dat.csv&quot;
+
+rd.dat.df &lt;- rio::import(URL)
+rd.dat = as.matrix(rd.dat.df[,-1])
+row.names(rd.dat) = rd.dat.df[[1]]</code></pre>
+<pre class="r"><code>URL &lt;- &quot;https://allen-share.s3.us-east-2.amazonaws.com/scrattch.example/CTX-CGE_GABA.umap.2d.csv&quot;
+
+umap.df &lt;- rio::import(URL, header = T)
+row.names(umap.df) = umap.df[[1]] 
+umap.df = umap.df[,-1]</code></pre>
+<div id="cluster-constellation" class="section level3">
+<h3>Cluster constellation</h3>
+<pre class="r"><code>cl.cl = with(anno.df %&gt;% filter(library_method==&quot;10Xv3&quot; &amp; 
+  !is.na(subclass_id_label) &amp; cluster_alias %in% cl.df$cl), setNames(cluster_id, cell_label))
+
+rd.dat = rd.dat[intersect(rownames(rd.dat),names(cl.cl)),]</code></pre>
+<pre class="r"><code>result = get_knn_graph(rd.dat, cl=cl.cl, k =50) </code></pre>
+<p>Select the most robust edges for plotting</p>
+<pre class="r"><code>knn.cl.df = result$knn.cl.df 
+knn.cl.df = knn.cl.df %&gt;% group_by(cl.from) %&gt;% mutate(cl.from.rank = rank(-Freq))
+knn.cl.df = knn.cl.df %&gt;% group_by(cl.to) %&gt;% mutate(cl.to.rank = rank(-Freq))
+select.knn.cl.df = with(knn.cl.df, knn.cl.df[odds &gt; 1 &amp; pval.log &lt; log(1/100000) &amp; (frac &gt; 0.1 | frac &gt; 0.03 &amp; Freq &gt; 100) &amp; (cl.from.rank &lt; 4| cl.to.rank &lt; 4),])</code></pre>
+<p>Create the nodes to be plotted on the constellation. The nodes are
+located at the centroid location of cells within a grouping of cells.
+The grouping of cells in this case is cluster. For plotting a few
+columns are expected by the function, these include;</p>
+<ul>
+<li><p>cluster_id</p></li>
+<li><p>cluster_label</p></li>
+<li><p>cluster_color</p></li>
+<li><p>cluster_size</p></li>
+</ul>
+<pre class="r"><code>prefix = &quot;CTX-CGE&quot;
+
+cl.center.df = as.data.frame(get_RD_cl_center(umap.df,cl.cl)) 
+
+cl.df$cluster_size &lt;- rowSums(cl.df[,c(&quot;v3.size&quot;, &quot;v2.size&quot;, &quot;multiome.size&quot;   )])
+
+cl.center.df$cluster_id = as.integer(as.character(row.names(cl.center.df) ))
+cl.center.df &lt;- cl.center.df %&gt;% left_join(cl.df[,c(1:12,48:53)])
+cl.center.df$cluster_label &lt;- cl.center.df$cluster_id_label
+rownames(cl.center.df) &lt;- cl.center.df$cluster_id
+
+# set cl as cluster_id since that was used to summarise the edges
+cl.center.df$cl = as.integer(as.character(row.names(cl.center.df) ))
+
+tmp.cl = cl.center.df$cluster_id
+tmp.knn.cl.df = select.knn.cl.df %&gt;% filter(cl.from %in% tmp.cl &amp; cl.to %in% tmp.cl)</code></pre>
+<pre class="r"><code>  c.plot=plot_constellation(tmp.knn.cl.df, 
+                            cl.center.df=cl.center.df, 
+                            out.dir=&quot;./&quot;,
+                            prefix=paste0(prefix,&quot;.cluster.stcol&quot;),
+                            node.label=&quot;cluster_id&quot;,
+                            exxageration=2,
+                            plot.parts=FALSE,
+                            return.list = T,
+                            node.dodge = F,
+                            label_repel = TRUE,
+                            label.size = 4,
+                            plot.height = 15,
+                            plot.width = 15)
+c.plot$constellation</code></pre>
+<p><img src="Constellation_files/figure-html/plot1-1.png" width="960" /></p>
+</div>
+<div id="adjust-the-color-of-the-nodes-to-reflect-subclasses"
+class="section level3">
+<h3>Adjust the color of the nodes to reflect subclasses</h3>
+<pre class="r"><code>cl.center.df$cluster_color &lt;- cl.center.df$subclass_color
+  c.plot=plot_constellation(tmp.knn.cl.df, 
+                            cl.center.df=cl.center.df, 
+                            out.dir=&quot;./&quot;, # directory for saving files
+                            prefix=paste0(prefix,&quot;.cluster.sccol&quot;), #filename for saving
+                            node.label=&quot;cluster_id&quot;,
+                            exxageration=2,
+                            plot.parts=FALSE,
+                            return.list = T,
+                            node.dodge = F,
+                            label_repel = TRUE,
+                            label.size = 4,
+                            plot.height = 15,
+                            plot.width = 15)
+c.plot$constellation</code></pre>
+<p><img src="Constellation_files/figure-html/plot2-1.png" width="960" /></p>
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiQ29uc3RlbGxhdGlvbiBwbG90IgpvdXRwdXQ6CiAgaHRtbF9kb2N1bWVudDoKICAgIHRvYzogdHJ1ZQogICAgdG9jX2Zsb2F0OiB0cnVlCiAgICBjb2RlX2Rvd25sb2FkOiB0cnVlCiAgICBjb2RlX2ZvbGRpbmc6IGhpZGUKZGF0ZTogIjIwMjQtMDItMDYiCmVkaXRvcl9vcHRpb25zOiAKICBtYXJrZG93bjogCiAgICB3cmFwOiA3MgotLS0KCiMjIENyZWF0aW5nIGEgY29uc3RlbGxhdGlvbiBwbG90CgpUaGlzIG5vdGVib29rIGNhbiBiZSB1c2VkIHRvIGNyZWF0ZSBhIGNvbnN0ZWxsYXRpb24gcGxvdC4KCkZvciB0aGUgcHVycG9zZSBvZiB0aGlzIG5vdGVib29rLCB3ZSB3aWxsIHVzZSB0aGUgZGF0YSBmcm9tIEdBQkFlcmdpYwpDR0UtZGVyaXZlZCBuZXVyb25zIGluIGNvcnRleC4gVGhpcyBkYXRhIGlzIGEgc3Vic2V0IG9mIHRoZSBkYXRhIGZyb20KdGhlIFtBbGxlbiBCcmFpbiBDZWxsCkF0bGFzXShodHRwczovL2FsbGVuaW5zdGl0dXRlLmdpdGh1Yi5pby9hYmNfYXRsYXNfYWNjZXNzL2ludHJvLmh0bWwpLgoKVGhpcyBub3RlYm9vayB3aWxsIGZpcnN0IGNvbnN0cnVjdCB0aGUga25uIG1hdHJpeCBieSBydW5uaW5nIHRoZQpgZ2V0X2tubl9ncmFwaCgpYCBmdW5jdGlvbiB3aGljaCBzZXJ2ZXMgYXMgcGFydCBvZiB0aGUgaW5wdXQgZm9yIHRoZQpgcGxvdF9jb25zdGVsbGF0aW9uKClgIGZ1bmN0aW9uLiBNb3JlIGluZm9ybWF0aW9uIGFib3V0IHRoZSBmdW5jdGlvbnMKYW5kIHRoZWlyIGlucHV0IHJlcXVpcmVtZW50cyBjYW4gYmUgZm91bmQgW2hlcmVdKCMwKS4KCmBgYHtyIGtsaXBweSwgZWNobz1GQUxTRSwgaW5jbHVkZT1UUlVFfQprbGlwcHk6OmtsaXBweSgpCmBgYAoKYGBge3Igc2V0dXAsIGluY2x1ZGU9RkFMU0V9CmtuaXRyOjpvcHRzX2NodW5rJHNldCh3YXJuaW5nID0gRkFMU0UsIG1lc3NhZ2UgPSBGQUxTRSkgCmBgYAoKYGBge3IgbG9hZGluZyBsaWJzLCBlY2hvPVR9CmxpYnJhcnkoZ2dwbG90MikKbGlicmFyeShwdXJycikKbGlicmFyeShzY3JhdHRjaC52aXMpCmxpYnJhcnkoc2NyYXR0Y2guaGljYXQpCmxpYnJhcnkoTWF0cml4KQpsaWJyYXJ5KGRwbHlyKQpsaWJyYXJ5KHRpZHlyKQpsaWJyYXJ5KHBhcmFsbGVsKQpsaWJyYXJ5KGJpZ3N0YXRzcikKbGlicmFyeShzY3JhdHRjaC5iaWdjYXQpCmxpYnJhcnkoZGF0YS50YWJsZSkKbGlicmFyeShhcnJvdykKbGlicmFyeShCaW9jTmVpZ2hib3JzKQoKYGBgCgpgYGB7ciBsb2FkLUFCQ2RhdGEsICwgZXZhbD1UfQpVUkwgPSAnaHR0cHM6Ly9hbGxlbi1icmFpbi1jZWxsLWF0bGFzLnMzLXVzLXdlc3QtMi5hbWF6b25hd3MuY29tL21ldGFkYXRhL1dNQi10YXhvbm9teS8yMDIzMTIxNS9jbC5kZl9DQ04yMDIzMDcyMjAueGxzeCcKZGF0YSA9IHJpbzo6aW1wb3J0X2xpc3QoVVJMKQoKY29sb3JzIDwtIHJpbzo6aW1wb3J0KCJodHRwczovL2FsbGVuLWJyYWluLWNlbGwtYXRsYXMuczMtdXMtd2VzdC0yLmFtYXpvbmF3cy5jb20vbWV0YWRhdGEvV01CLXRheG9ub215LzIwMjMxMjE1L3ZpZXdzL2NsdXN0ZXJfdG9fY2x1c3Rlcl9hbm5vdGF0aW9uX21lbWJlcnNoaXBfY29sb3IuY3N2IikKClVSTCA9ICJodHRwczovL2FsbGVuLWJyYWluLWNlbGwtYXRsYXMuczMtdXMtd2VzdC0yLmFtYXpvbmF3cy5jb20vbWV0YWRhdGEvV01CLTEwWC8yMDIzMTIxNS9jZWxsX21ldGFkYXRhLmNzdiIKYW5uby5kZiA9IHJpbzo6aW1wb3J0KFVSTCkKCmBgYAoKYGBge3Igc2V0LWNvbG9ycywgIGV2YWw9VH0KCmNsLmRmIDwtIGRhdGEkY2x1c3Rlcl9hbm5vdGF0aW9uCmNsLmRmIDwtIGNsLmRmW2NsLmRmJGNsYXNzX2xhYmVsICE9ICJMUSIsXQoKIyBhZGQgY29sb3JzIHRvIGNsdXN0ZXIgZGF0YSBmcmFtZQpjb2xvcnMkY2x1c3Rlcl9hbGlhcyA8LSBhcy5jaGFyYWN0ZXIoYXMuaW50ZWdlcihjb2xvcnMkY2x1c3Rlcl9hbGlhcykpCmNsLmRmIDwtIGNsLmRmICU+JSBsZWZ0X2pvaW4oY29sb3JzLCBieT1jKCJjbCI9ImNsdXN0ZXJfYWxpYXMiKSkKCnNlbGVjdC5jb2x1bW5zIDwtIGNvbG5hbWVzKGNsLmRmKVtncmVwKCJec3VwZXJ0eXBlIiwgY29sbmFtZXMoY2wuZGYpKV0Kc3QuZGYgPC0gY2wuZGYgJT4lIGdyb3VwX2J5X2F0KHNlbGVjdC5jb2x1bW5zKSAlPiUgc3VtbWFyaXNlKG49bigpKQoKc2VsZWN0LmNvbHVtbnMgPC0gY29sbmFtZXMoY2wuZGYpW2dyZXAoIl5zdWJjbGFzcyIsIGNvbG5hbWVzKGNsLmRmKSldCnNjLmRmIDwtIGNsLmRmICU+JSBncm91cF9ieV9hdChzZWxlY3QuY29sdW1ucykgJT4lIHN1bW1hcmlzZShuPW4oKSkKCnNlbGVjdC5jb2x1bW5zIDwtIGNvbG5hbWVzKGNsLmRmKVtncmVwKCJeY2xhc3MiLCBjb2xuYW1lcyhjbC5kZikpXQpjLmRmIDwtIGNsLmRmICU+JSBncm91cF9ieV9hdChzZWxlY3QuY29sdW1ucykgJT4lIHN1bW1hcmlzZShuPW4oKSkKCmBgYAoKYGBge3Igc3Vic2V0LWRhdGEsICwgZXZhbD1UfQpjbC5kZiA8LSBjbC5kZiAlPiUgZmlsdGVyKGNsYXNzX2lkID09IDYpCmNsLmRmJGNsIDwtIGFzLmludGVnZXIoYXMuY2hhcmFjdGVyKGNsLmRmJGNsKSkKCmFubm8uZGYgPC0gYW5uby5kZiAlPiUgCiAgZmlsdGVyKGNsdXN0ZXJfYWxpYXMgJWluJSBjbC5kZiRjbCkgJT4lIAogICMgZmlsdGVyKGxpYnJhcnlfbWV0aG9kID09ICIxMFh2MyIpICU+JQogIGxlZnRfam9pbihjbC5kZlssYygxOjEyKV0sIGJ5PWMoImNsdXN0ZXJfYWxpYXMiPSJjbCIpKSAKcm93bmFtZXMoYW5uby5kZikgPC0gYW5uby5kZiRjZWxsX2xhYmVsCgoKYGBgCgpPbmUgb2YgdGhlIGlucHV0cyByZXF1aXJlZCB0byBnZW5lcmF0ZSB0aGUgS05OIGdyYXBoIGlzIGEgcmVkdWNlZApkaW1lbnNpb24gbWF0cml4LiBGb3IgdGhlIHB1cnBvc2Ugb2YgdGhpcyBub3RlYm9vayBhIHByZS1tYWRlIG1hdHJpeCBpcwpkb3dubG9hZGVkCgpgYGB7ciBsb2FkLXJkZGF0LCAgZXZhbD1UfQpVUkwgPC0gImh0dHBzOi8vYWxsZW4tc2hhcmUuczMudXMtZWFzdC0yLmFtYXpvbmF3cy5jb20vc2NyYXR0Y2guZXhhbXBsZS9DVFgtQ0dFX0dBQkEucmQuZGF0LmNzdiIKCnJkLmRhdC5kZiA8LSByaW86OmltcG9ydChVUkwpCnJkLmRhdCA9IGFzLm1hdHJpeChyZC5kYXQuZGZbLC0xXSkKcm93Lm5hbWVzKHJkLmRhdCkgPSByZC5kYXQuZGZbWzFdXQpgYGAKCmBgYHtyIGxvYWQtdW1hcCwgIGV2YWw9VH0KVVJMIDwtICJodHRwczovL2FsbGVuLXNoYXJlLnMzLnVzLWVhc3QtMi5hbWF6b25hd3MuY29tL3NjcmF0dGNoLmV4YW1wbGUvQ1RYLUNHRV9HQUJBLnVtYXAuMmQuY3N2IgoKdW1hcC5kZiA8LSByaW86OmltcG9ydChVUkwsIGhlYWRlciA9IFQpCnJvdy5uYW1lcyh1bWFwLmRmKSA9IHVtYXAuZGZbWzFdXSAKdW1hcC5kZiA9IHVtYXAuZGZbLC0xXQpgYGAKCiMjIyBDbHVzdGVyIGNvbnN0ZWxsYXRpb24KCmBgYHtyIGNsdXN0ZXItdmVjdG9yLCBldmFsPVR9CmNsLmNsID0gd2l0aChhbm5vLmRmICU+JSBmaWx0ZXIobGlicmFyeV9tZXRob2Q9PSIxMFh2MyIgJiAKICAhaXMubmEoc3ViY2xhc3NfaWRfbGFiZWwpICYgY2x1c3Rlcl9hbGlhcyAlaW4lIGNsLmRmJGNsKSwgc2V0TmFtZXMoY2x1c3Rlcl9pZCwgY2VsbF9sYWJlbCkpCgpyZC5kYXQgPSByZC5kYXRbaW50ZXJzZWN0KHJvd25hbWVzKHJkLmRhdCksbmFtZXMoY2wuY2wpKSxdCmBgYAoKYGBge3IgY2x1c3Rlci1rbm4sICBldmFsPVR9CnJlc3VsdCA9IGdldF9rbm5fZ3JhcGgocmQuZGF0LCBjbD1jbC5jbCwgayA9NTApIApgYGAKClNlbGVjdCB0aGUgbW9zdCByb2J1c3QgZWRnZXMgZm9yIHBsb3R0aW5nCgpgYGB7ciBjbHVzdGVyLXNlbGVjdC5rbm4sIGV2YWw9VH0Ka25uLmNsLmRmID0gcmVzdWx0JGtubi5jbC5kZiAKa25uLmNsLmRmID0ga25uLmNsLmRmICU+JSBncm91cF9ieShjbC5mcm9tKSAlPiUgbXV0YXRlKGNsLmZyb20ucmFuayA9IHJhbmsoLUZyZXEpKQprbm4uY2wuZGYgPSBrbm4uY2wuZGYgJT4lIGdyb3VwX2J5KGNsLnRvKSAlPiUgbXV0YXRlKGNsLnRvLnJhbmsgPSByYW5rKC1GcmVxKSkKc2VsZWN0Lmtubi5jbC5kZiA9IHdpdGgoa25uLmNsLmRmLCBrbm4uY2wuZGZbb2RkcyA+IDEgJiBwdmFsLmxvZyA8IGxvZygxLzEwMDAwMCkgJiAoZnJhYyA+IDAuMSB8IGZyYWMgPiAwLjAzICYgRnJlcSA+IDEwMCkgJiAoY2wuZnJvbS5yYW5rIDwgNHwgY2wudG8ucmFuayA8IDQpLF0pCmBgYAoKQ3JlYXRlIHRoZSBub2RlcyB0byBiZSBwbG90dGVkIG9uIHRoZSBjb25zdGVsbGF0aW9uLiBUaGUgbm9kZXMgYXJlCmxvY2F0ZWQgYXQgdGhlIGNlbnRyb2lkIGxvY2F0aW9uIG9mIGNlbGxzIHdpdGhpbiBhIGdyb3VwaW5nIG9mIGNlbGxzLgpUaGUgZ3JvdXBpbmcgb2YgY2VsbHMgaW4gdGhpcyBjYXNlIGlzIGNsdXN0ZXIuIEZvciBwbG90dGluZyBhIGZldwpjb2x1bW5zIGFyZSBleHBlY3RlZCBieSB0aGUgZnVuY3Rpb24sIHRoZXNlIGluY2x1ZGU7CgotICAgY2x1c3Rlcl9pZAoKLSAgIGNsdXN0ZXJfbGFiZWwKCi0gICBjbHVzdGVyX2NvbG9yCgotICAgY2x1c3Rlcl9zaXplCgpgYGB7ciwgZXZhbD1UfQpwcmVmaXggPSAiQ1RYLUNHRSIKCmNsLmNlbnRlci5kZiA9IGFzLmRhdGEuZnJhbWUoZ2V0X1JEX2NsX2NlbnRlcih1bWFwLmRmLGNsLmNsKSkgCgpjbC5kZiRjbHVzdGVyX3NpemUgPC0gcm93U3VtcyhjbC5kZlssYygidjMuc2l6ZSIsICJ2Mi5zaXplIiwgIm11bHRpb21lLnNpemUiICAgKV0pCgpjbC5jZW50ZXIuZGYkY2x1c3Rlcl9pZCA9IGFzLmludGVnZXIoYXMuY2hhcmFjdGVyKHJvdy5uYW1lcyhjbC5jZW50ZXIuZGYpICkpCmNsLmNlbnRlci5kZiA8LSBjbC5jZW50ZXIuZGYgJT4lIGxlZnRfam9pbihjbC5kZlssYygxOjEyLDQ4OjUzKV0pCmNsLmNlbnRlci5kZiRjbHVzdGVyX2xhYmVsIDwtIGNsLmNlbnRlci5kZiRjbHVzdGVyX2lkX2xhYmVsCnJvd25hbWVzKGNsLmNlbnRlci5kZikgPC0gY2wuY2VudGVyLmRmJGNsdXN0ZXJfaWQKCiMgc2V0IGNsIGFzIGNsdXN0ZXJfaWQgc2luY2UgdGhhdCB3YXMgdXNlZCB0byBzdW1tYXJpc2UgdGhlIGVkZ2VzCmNsLmNlbnRlci5kZiRjbCA9IGFzLmludGVnZXIoYXMuY2hhcmFjdGVyKHJvdy5uYW1lcyhjbC5jZW50ZXIuZGYpICkpCgp0bXAuY2wgPSBjbC5jZW50ZXIuZGYkY2x1c3Rlcl9pZAp0bXAua25uLmNsLmRmID0gc2VsZWN0Lmtubi5jbC5kZiAlPiUgZmlsdGVyKGNsLmZyb20gJWluJSB0bXAuY2wgJiBjbC50byAlaW4lIHRtcC5jbCkKCmBgYAoKYGBge3IgcGxvdDEsICByZXN1bHRzPSdoaWRlJywgZXZhbD1ULCBmaWcuaGVpZ2h0PTEwLCBmaWcud2lkdGg9MTB9CiAgYy5wbG90PXBsb3RfY29uc3RlbGxhdGlvbih0bXAua25uLmNsLmRmLCAKICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNsLmNlbnRlci5kZj1jbC5jZW50ZXIuZGYsIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgb3V0LmRpcj0iLi8iLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgcHJlZml4PXBhc3RlMChwcmVmaXgsIi5jbHVzdGVyLnN0Y29sIiksCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBub2RlLmxhYmVsPSJjbHVzdGVyX2lkIiwKICAgICAgICAgICAgICAgICAgICAgICAgICAgIGV4eGFnZXJhdGlvbj0yLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgcGxvdC5wYXJ0cz1GQUxTRSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHJldHVybi5saXN0ID0gVCwKICAgICAgICAgICAgICAgICAgICAgICAgICAgIG5vZGUuZG9kZ2UgPSBGLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgbGFiZWxfcmVwZWwgPSBUUlVFLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgbGFiZWwuc2l6ZSA9IDQsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBwbG90LmhlaWdodCA9IDE1LAogICAgICAgICAgICAgICAgICAgICAgICAgICAgcGxvdC53aWR0aCA9IDE1KQpjLnBsb3QkY29uc3RlbGxhdGlvbgoKYGBgCgoKCgojIyMgQWRqdXN0IHRoZSBjb2xvciBvZiB0aGUgbm9kZXMgdG8gcmVmbGVjdCBzdWJjbGFzc2VzCmBgYHtyIHBsb3QyLCBldmFsPVQsIHJlc3VsdHM9J2hpZGUnLGZpZy5oZWlnaHQ9MTAsIGZpZy53aWR0aD0xMH0KCmNsLmNlbnRlci5kZiRjbHVzdGVyX2NvbG9yIDwtIGNsLmNlbnRlci5kZiRzdWJjbGFzc19jb2xvcgogIGMucGxvdD1wbG90X2NvbnN0ZWxsYXRpb24odG1wLmtubi5jbC5kZiwgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBjbC5jZW50ZXIuZGY9Y2wuY2VudGVyLmRmLCAKICAgICAgICAgICAgICAgICAgICAgICAgICAgIG91dC5kaXI9Ii4vIiwgIyBkaXJlY3RvcnkgZm9yIHNhdmluZyBmaWxlcwogICAgICAgICAgICAgICAgICAgICAgICAgICAgcHJlZml4PXBhc3RlMChwcmVmaXgsIi5jbHVzdGVyLnNjY29sIiksICNmaWxlbmFtZSBmb3Igc2F2aW5nCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBub2RlLmxhYmVsPSJjbHVzdGVyX2lkIiwKICAgICAgICAgICAgICAgICAgICAgICAgICAgIGV4eGFnZXJhdGlvbj0yLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgcGxvdC5wYXJ0cz1GQUxTRSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHJldHVybi5saXN0ID0gVCwKICAgICAgICAgICAgICAgICAgICAgICAgICAgIG5vZGUuZG9kZ2UgPSBGLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgbGFiZWxfcmVwZWwgPSBUUlVFLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgbGFiZWwuc2l6ZSA9IDQsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBwbG90LmhlaWdodCA9IDE1LAogICAgICAgICAgICAgICAgICAgICAgICAgICAgcGxvdC53aWR0aCA9IDE1KQpjLnBsb3QkY29uc3RlbGxhdGlvbgoKYGBgCgo=</div>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("Constellation.Rmd");
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

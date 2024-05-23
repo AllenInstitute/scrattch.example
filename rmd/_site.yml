@@ -1,0 +1,18 @@
+name: "scrattch.example"
+navbar:
+  title: "scrattch.example"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Plot examples"
+      menu: 
+      - text: Constellation
+        href: Constellation.html 
+      - text: HierTree
+        href: HierTree.html  
+      - text: Sunburst
+        href: Sunburst.html  
+output_dir: docs
+output:
+  html_document:
+    theme: yeti
