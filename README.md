@@ -2,6 +2,8 @@
 
 A collection of notebooks to recreate some of the analyses and visualizations created by using the scrattch suite of tools.
 
+https://alleninstitute.github.io/scrattch.example/
+
 List of tools:
 
 [`scrattch.io`](https://github.com/AllenInstitute/scrattch.io) - File handling and data formatting\
