@@ -1,0 +1,214 @@
+---
+title: "Constellation plot"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    code_download: true
+    code_folding: hide
+date: "2024-02-06"
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+## Creating a constellation plot
+
+This notebook can be used to create a constellation plot.
+
+For the purpose of this notebook, we will use the data from GABAergic
+CGE-derived neurons in cortex. This data is a subset of the data from
+the [Allen Brain Cell
+Atlas](https://alleninstitute.github.io/abc_atlas_access/intro.html).
+
+This notebook will first construct the knn matrix by running the
+`get_knn_graph()` function which serves as part of the input for the
+`plot_constellation()` function. More information about the functions
+and their input requirements can be found [here](#0).
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy()
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+```{r loading libs, echo=T}
+library(ggplot2)
+library(purrr)
+library(scrattch.vis)
+library(scrattch.hicat)
+library(Matrix)
+library(dplyr)
+library(tidyr)
+library(parallel)
+library(bigstatsr)
+library(scrattch.bigcat)
+library(data.table)
+library(arrow)
+library(BiocNeighbors)
+
+```
+
+```{r load-ABCdata, , eval=T}
+URL = 'https://allen-brain-cell-atlas.s3-us-west-2.amazonaws.com/metadata/WMB-taxonomy/20231215/cl.df_CCN202307220.xlsx'
+data = rio::import_list(URL)
+
+colors <- rio::import("https://allen-brain-cell-atlas.s3-us-west-2.amazonaws.com/metadata/WMB-taxonomy/20231215/views/cluster_to_cluster_annotation_membership_color.csv")
+
+URL = "https://allen-brain-cell-atlas.s3-us-west-2.amazonaws.com/metadata/WMB-10X/20231215/cell_metadata.csv"
+anno.df = rio::import(URL)
+
+```
+
+```{r set-colors,  eval=T}
+
+cl.df <- data$cluster_annotation
+cl.df <- cl.df[cl.df$class_label != "LQ",]
+
+# add colors to cluster data frame
+colors$cluster_alias <- as.character(as.integer(colors$cluster_alias))
+cl.df <- cl.df %>% left_join(colors, by=c("cl"="cluster_alias"))
+
+select.columns <- colnames(cl.df)[grep("^supertype", colnames(cl.df))]
+st.df <- cl.df %>% group_by_at(select.columns) %>% summarise(n=n())
+
+select.columns <- colnames(cl.df)[grep("^subclass", colnames(cl.df))]
+sc.df <- cl.df %>% group_by_at(select.columns) %>% summarise(n=n())
+
+select.columns <- colnames(cl.df)[grep("^class", colnames(cl.df))]
+c.df <- cl.df %>% group_by_at(select.columns) %>% summarise(n=n())
+
+```
+
+```{r subset-data, , eval=T}
+cl.df <- cl.df %>% filter(class_id == 6)
+cl.df$cl <- as.integer(as.character(cl.df$cl))
+
+anno.df <- anno.df %>% 
+  filter(cluster_alias %in% cl.df$cl) %>% 
+  # filter(library_method == "10Xv3") %>%
+  left_join(cl.df[,c(1:12)], by=c("cluster_alias"="cl")) 
+rownames(anno.df) <- anno.df$cell_label
+
+
+```
+
+One of the inputs required to generate the KNN graph is a reduced
+dimension matrix. For the purpose of this notebook a pre-made matrix is
+downloaded
+
+```{r load-rddat,  eval=T}
+URL <- "https://allen-share.s3.us-east-2.amazonaws.com/scrattch.example/CTX-CGE_GABA.rd.dat.csv"
+
+rd.dat.df <- rio::import(URL)
+rd.dat = as.matrix(rd.dat.df[,-1])
+row.names(rd.dat) = rd.dat.df[[1]]
+```
+
+```{r load-umap,  eval=T}
+URL <- "https://allen-share.s3.us-east-2.amazonaws.com/scrattch.example/CTX-CGE_GABA.umap.2d.csv"
+
+umap.df <- rio::import(URL, header = T)
+row.names(umap.df) = umap.df[[1]] 
+umap.df = umap.df[,-1]
+```
+
+### Cluster constellation
+
+```{r cluster-vector, eval=T}
+cl.cl = with(anno.df %>% filter(library_method=="10Xv3" & 
+  !is.na(subclass_id_label) & cluster_alias %in% cl.df$cl), setNames(cluster_id, cell_label))
+
+rd.dat = rd.dat[intersect(rownames(rd.dat),names(cl.cl)),]
+```
+
+```{r cluster-knn,  eval=T}
+result = get_knn_graph(rd.dat, cl=cl.cl, k =50) 
+```
+
+Select the most robust edges for plotting
+
+```{r cluster-select.knn, eval=T}
+knn.cl.df = result$knn.cl.df 
+knn.cl.df = knn.cl.df %>% group_by(cl.from) %>% mutate(cl.from.rank = rank(-Freq))
+knn.cl.df = knn.cl.df %>% group_by(cl.to) %>% mutate(cl.to.rank = rank(-Freq))
+select.knn.cl.df = with(knn.cl.df, knn.cl.df[odds > 1 & pval.log < log(1/100000) & (frac > 0.1 | frac > 0.03 & Freq > 100) & (cl.from.rank < 4| cl.to.rank < 4),])
+```
+
+Create the nodes to be plotted on the constellation. The nodes are
+located at the centroid location of cells within a grouping of cells.
+The grouping of cells in this case is cluster. For plotting a few
+columns are expected by the function, these include;
+
+-   cluster_id
+
+-   cluster_label
+
+-   cluster_color
+
+-   cluster_size
+
+```{r, eval=T}
+prefix = "CTX-CGE"
+
+cl.center.df = as.data.frame(get_RD_cl_center(umap.df,cl.cl)) 
+
+cl.df$cluster_size <- rowSums(cl.df[,c("v3.size", "v2.size", "multiome.size"   )])
+
+cl.center.df$cluster_id = as.integer(as.character(row.names(cl.center.df) ))
+cl.center.df <- cl.center.df %>% left_join(cl.df[,c(1:12,48:53)])
+cl.center.df$cluster_label <- cl.center.df$cluster_id_label
+rownames(cl.center.df) <- cl.center.df$cluster_id
+
+# set cl as cluster_id since that was used to summarise the edges
+cl.center.df$cl = as.integer(as.character(row.names(cl.center.df) ))
+
+tmp.cl = cl.center.df$cluster_id
+tmp.knn.cl.df = select.knn.cl.df %>% filter(cl.from %in% tmp.cl & cl.to %in% tmp.cl)
+
+```
+
+```{r plot1,  results='hide', eval=T, fig.height=10, fig.width=10}
+  c.plot=plot_constellation(tmp.knn.cl.df, 
+                            cl.center.df=cl.center.df, 
+                            out.dir="./",
+                            prefix=paste0(prefix,".cluster.stcol"),
+                            node.label="cluster_id",
+                            exxageration=2,
+                            plot.parts=FALSE,
+                            return.list = T,
+                            node.dodge = F,
+                            label_repel = TRUE,
+                            label.size = 4,
+                            plot.height = 15,
+                            plot.width = 15)
+c.plot$constellation
+
+```
+
+
+
+
+### Adjust the color of the nodes to reflect subclasses
+```{r plot2, eval=T, results='hide',fig.height=10, fig.width=10}
+
+cl.center.df$cluster_color <- cl.center.df$subclass_color
+  c.plot=plot_constellation(tmp.knn.cl.df, 
+                            cl.center.df=cl.center.df, 
+                            out.dir="./", # directory for saving files
+                            prefix=paste0(prefix,".cluster.sccol"), #filename for saving
+                            node.label="cluster_id",
+                            exxageration=2,
+                            plot.parts=FALSE,
+                            return.list = T,
+                            node.dodge = F,
+                            label_repel = TRUE,
+                            label.size = 4,
+                            plot.height = 15,
+                            plot.width = 15)
+c.plot$constellation
+
+```
+
