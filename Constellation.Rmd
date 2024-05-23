@@ -6,14 +6,18 @@ output:
     toc_float: true
     code_download: true
     code_folding: hide
-date: "2024-02-06"
+date: "2024-05-23"
 editor_options: 
   markdown: 
     wrap: 72
 ---
 
+\
+\
+
 ## Creating a constellation plot
 
+\
 This notebook can be used to create a constellation plot.
 
 For the purpose of this notebook, we will use the data from GABAergic
