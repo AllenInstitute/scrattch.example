@@ -13,5 +13,6 @@ List of tools:
 
 
 Data:
-[`tasic2016data`](https://github.com/AllenInstitute/tasic2016data) - Data from Tasic, et al. (2016), which is used for some demos
+
+[`tasic2016data`](https://github.com/AllenInstitute/tasic2016data) - Data from Tasic, et al. (2016), which is used for some demos\
 ['ABC-atlas'](https://alleninstitute.github.io/abc_atlas_access/intro.html) - Allen Brain Cell Atlas - Data Access.
