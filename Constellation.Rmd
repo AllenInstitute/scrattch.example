@@ -6,25 +6,28 @@ output:
     toc_float: true
     code_download: true
     code_folding: hide
-date: "2024-02-06"
+date: "2024-05-23"
 editor_options: 
   markdown: 
     wrap: 72
 ---
 
+\
+\
+
 ## Creating a constellation plot
+\
 
 This notebook can be used to create a constellation plot.
 
 For the purpose of this notebook, we will use the data from GABAergic
 CGE-derived neurons in cortex. This data is a subset of the data from
-the [Allen Brain Cell
-Atlas](https://alleninstitute.github.io/abc_atlas_access/intro.html).
+the [Allen Brain Cell Atlas](https://alleninstitute.github.io/abc_atlas_access/intro.html).
 
 This notebook will first construct the knn matrix by running the
 `get_knn_graph()` function which serves as part of the input for the
 `plot_constellation()` function. More information about the functions
-and their input requirements can be found [here](#0).
+and their input requirements can be found [here](https://github.com/AllenInstitute/scrattch.bigcat/blob/master/R/KNN.graph.R).
 
 ```{r klippy, echo=FALSE, include=TRUE}
 klippy::klippy()

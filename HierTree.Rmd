@@ -8,11 +8,14 @@ output:
     code_folding: hide
 date: "2024-02-06"
 ---
+\
+\
 
 ## Plotting a hierarchical tree
+\
 
 This script can be used to plot a hierarchical tree like the one presented in Yao et al., 2023 Figure 1.
-The input can be a data frame with rows representing the leaf-level and columns represent annotations. This data frame needs to be restructured to a parent-child (hierarchical network data frame), which is what the 'as.hierDF' does. 
+The input can be a data frame with rows representing the leaf-level and columns represent annotations. This data frame needs to be restructured to a parent-child (hierarchical network data frame), which is what the 'as.hierDF' function does. 
 
 ```{r klippy, echo=FALSE, include=TRUE}
 klippy::klippy()
@@ -35,7 +38,8 @@ require(ggrepel)
 
 ```
 
-Let's start by loading some dummy hierarchical data.
+Let's start by loading some dummy hierarchical data. This data is a subset of the data from
+the [Allen Brain Cell Atlas](https://alleninstitute.github.io/abc_atlas_access/intro.html).
 
 ```{r, echo=F, eval=T}
 URL = 'https://allen-brain-cell-atlas.s3-us-west-2.amazonaws.com/metadata/WMB-taxonomy/20231215/cl.df_CCN202307220.xlsx'

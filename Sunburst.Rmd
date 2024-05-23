@@ -1,5 +1,6 @@
 ---
 title: "Sunburst hierarchy"
+author: "Cindy van Velthoven"
 output:
   html_document:
     toc: true
@@ -17,7 +18,7 @@ date: "2024-02-06"
 \
 
 This script can be used to plot a sunburst diagram to represent a hierarchy.
-The input can be a data frame with rows representing the leaf-level and columns represent annotations. This data frame needs to be restructured to a parent-child (hierarchical network data frame), which is what the 'as.hierDF' does. 
+The input can be a data frame with rows representing the leaf-level and columns represent annotations. This data frame needs to be restructured to a parent-child (hierarchical network data frame), which is what the 'as.hierDF' function does. 
 
 ```{r klippy, echo=FALSE, include=TRUE}
 klippy::klippy()
@@ -34,7 +35,8 @@ require(plotly)
 
 ```
 
-Let's start by loading some dummy hierarchical data.
+Let's start by loading some dummy hierarchical data. This data is a subset of the data from
+the [Allen Brain Cell Atlas](https://alleninstitute.github.io/abc_atlas_access/intro.html).
 
 ```{r, echo=T, eval=T}
 URL = 'https://allen-brain-cell-atlas.s3-us-west-2.amazonaws.com/metadata/WMB-taxonomy/20231215/cl.df_CCN202307220.xlsx'
@@ -65,7 +67,6 @@ c.df <- cl.df %>% group_by_at(select.columns) %>% summarise(n=n())
 
 ```
 
-A hierarchic structure is basically a set of nodes, with edges linking nodes. Let's create an edge list for plotting using the <igraph> package.We'll do this for a subset of the data.
 
 ```{r, echo=T, eval=T}
 devtools::source_gist("https://gist.github.com/cvanvelt/ef29e1581b30b9758ec1bba1b8322619")
