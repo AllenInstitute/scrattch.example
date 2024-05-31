@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/288529654.svg)](https://zenodo.org/doi/10.5281/zenodo.10602652)
+
 # scrattch.example
 
 A collection of notebooks to recreate some of the analyses and visualizations created by using the scrattch suite of tools.
