@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/288529654.svg)](https://zenodo.org/doi/10.5281/zenodo.10602652)
+[![DOI](https://zenodo.org/badge/754456494.svg)](https://zenodo.org/doi/10.5281/zenodo.11403654)
 
 # scrattch.example
 
